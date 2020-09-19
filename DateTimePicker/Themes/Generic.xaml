@@ -1,0 +1,98 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents"
+    xmlns:converters="clr-namespace:DateTimePicker.Converters">
+
+    <converters:TimeConverter  x:Key="TimeConverter" />
+    <converters:DateConverter  x:Key="DateConverter" />
+
+    <Style TargetType="{x:Type customComponents:DateTimePicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type customComponents:DateTimePicker}">
+                    <Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <customComponents:DateTimeTextBox x:Name="PART_MAIN_TEXT_BOX" 
+                                                               Text="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, 
+                                                                StringFormat='yyyy-MM-dd HH:mm'}"
+                                                               FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
+                                                               VerticalContentAlignment="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                Path=VerticalContentAlignment}" />
+
+                            <UniformGrid Grid.Column="1" Columns="2">
+                                <UniformGrid Rows="2">
+                                    <RepeatButton x:Name="PART_MAIN_UP_BUTTON">
+                                        <RepeatButton.Content>
+                                            <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=UpSource}" />
+                                        </RepeatButton.Content>
+                                    </RepeatButton>
+
+                                    <RepeatButton x:Name="PART_MAIN_DOWN_BUTTON">
+                                        <RepeatButton.Content>
+                                            <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DownSource}" />
+                                        </RepeatButton.Content>
+                                    </RepeatButton>
+                                </UniformGrid>
+
+                                <ToggleButton x:Name="DisplayPopupButton">
+                                    <ToggleButton.Content>
+                                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=CalendarSource}" />
+                                    </ToggleButton.Content>
+                                </ToggleButton>
+
+                                <Popup IsOpen="{Binding Path=IsChecked, ElementName=DisplayPopupButton}" 
+                                       Placement="Bottom"
+                                       PlacementTarget="{Binding ElementName=PART_MAIN_TEXT_BOX}"
+                                       StaysOpen="False">
+                                    <StackPanel>
+                                        <Calendar SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                            Path=Value, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            Converter={StaticResource DateConverter}}" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox x:Name="PART_TIME_TEXT_BOX" 
+                                                     Text="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                        Path=Value, 
+                                                UpdateSourceTrigger=PropertyChanged, 
+                                                StringFormat='HH:mm', 
+                                                Converter={StaticResource TimeConverter}}" />
+
+                                            <StackPanel Grid.Column="1">
+                                                <RepeatButton x:Name="TIME_UP_BUTTON" Delay="500" Interval="100">
+                                                    <RepeatButton.Content>
+                                                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=UpSource}" />
+                                                    </RepeatButton.Content>
+                                                </RepeatButton>
+
+                                                <RepeatButton x:Name="TIME_DOWN_BUTTON" Delay="500" Interval="100">
+                                                    <RepeatButton.Content>
+                                                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DownSource}" />
+                                                    </RepeatButton.Content>
+                                                </RepeatButton>
+                                            </StackPanel>
+                                        </Grid>
+
+                                    </StackPanel>
+                                </Popup>
+                            </UniformGrid>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
