@@ -1,8 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents"
-    xmlns:converters="clr-namespace:DateTimePicker.Converters">
+    xmlns:converters="clr-namespace:DateTimePicker.Converters"
+    xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents">
 
     <converters:TimeConverter  x:Key="TimeConverter" />
     <converters:DateConverter  x:Key="DateConverter" />

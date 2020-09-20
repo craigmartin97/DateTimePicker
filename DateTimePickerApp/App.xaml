@@ -1,7 +1,7 @@
-﻿<Application x:Class="DateTimePicker.App"
+﻿<Application x:Class="DateTimePickerApp.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:DateTimePicker"
+             xmlns:local="clr-namespace:DateTimePickerApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
