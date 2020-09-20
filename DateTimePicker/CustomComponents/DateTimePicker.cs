@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DateTimePicker.DateStrategies;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -7,7 +8,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using DateTimePicker.DateStrategies;
 
 namespace DateTimePicker.CustomComponents
 {
@@ -102,6 +102,35 @@ namespace DateTimePicker.CustomComponents
             get => (ImageSource)GetValue(SetDownSourceProperty);
             set => SetValue(SetDownSourceProperty, value);
         }
+
+
+        public static readonly DependencyProperty SetFormatProperty =
+            DependencyProperty.Register("Format", typeof(Formats),
+                typeof(DateTimePicker), 
+                new FrameworkPropertyMetadata(Formats.ShortDateTime));
+
+        /// <summary>
+        /// Image path to be used for the calender button content
+        /// </summary>
+        public Formats Format
+        {
+            get => (Formats)GetValue(SetFormatProperty);
+            set => SetValue(SetFormatProperty, value);
+        }
+
+        public static readonly DependencyProperty SetTimeTextBoxVisibilityProperty =
+            DependencyProperty.Register("TimeTextBoxVisibility", typeof(Visibility),
+                typeof(DateTimePicker),
+                new FrameworkPropertyMetadata(System.Windows.Visibility.Visible));
+
+        /// <summary>
+        /// Image path to be used for the calender button content
+        /// </summary>
+        public Visibility TimeTextBoxVisibility
+        {
+            get => (Visibility)GetValue(SetFormatProperty);
+            set => SetValue(SetFormatProperty, value);
+        }
         #endregion
 
         #region Fields
@@ -110,7 +139,9 @@ namespace DateTimePicker.CustomComponents
         private RepeatButton _mainDownButton;
         private RepeatButton _timeUpButton;
         private RepeatButton _timeDownButton;
+
         private TextBox _mainTextBox;
+        private TextBox _timeTextBox;
 
         /// <summary>
         /// Increase main text box options
@@ -177,7 +208,10 @@ namespace DateTimePicker.CustomComponents
             _timeDownButton.Click += TimeDownButtonOnClick;
 
             _mainTextBox = Template.FindName("PART_MAIN_TEXT_BOX", this) as TextBox;
+            _timeTextBox = Template.FindName("PART_TIME_TEXT_BOX", this) as TextBox;
+
             _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
+            _timeTextBox.PreviewKeyDown += TimeTextBoxOnPreviewKeyDown;
         }
 
         private void MainTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -189,6 +223,30 @@ namespace DateTimePicker.CustomComponents
             else if (e.Key == Key.Up)
             {
                 Apply(_incrementFullDateDictionary, _mainTextBox, _mainTextBox.Text);
+            }
+            else if (e.Key == Key.Left)
+            {
+                FindPrevious(out int startSelectIndex, out int length);
+                _mainTextBox.Select(startSelectIndex, length);
+            }
+            else if (e.Key == Key.Right)
+            {
+                FindNext(out int startSelectIndex, out int length);
+                _mainTextBox.Select(startSelectIndex, length);
+            }
+
+            e.Handled = true;
+        }
+
+        private void TimeTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                Apply(_decrementTimeDictionary, _timeTextBox, _mainTextBox.Text);
+            }
+            else if (e.Key == Key.Up)
+            {
+                Apply(_incrementTimeDictionary, _timeTextBox, _mainTextBox.Text);
             }
             else if (e.Key == Key.Left)
             {

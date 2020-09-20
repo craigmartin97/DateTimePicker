@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:formats="clr-namespace:DateTimePicker"
     xmlns:converters="clr-namespace:DateTimePicker.Converters"
     xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents">
 
@@ -19,12 +20,28 @@
                             </Grid.ColumnDefinitions>
 
                             <customComponents:DateTimeTextBox x:Name="PART_MAIN_TEXT_BOX" 
-                                                               Text="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, 
-                                                                StringFormat='yyyy-MM-dd HH:mm'}"
-                                                               FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
+                                                              FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
                                                                VerticalContentAlignment="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                                                Path=VerticalContentAlignment}" />
+                                                                Path=VerticalContentAlignment}">
+                                <customComponents:DateTimeTextBox.Style>
+                                    <Style TargetType="{x:Type customComponents:DateTimeTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format}" 
+                                                         Value="{x:Static formats:Formats.ShortDateTime}">
+                                                <Setter  Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, StringFormat='yyyy/MM/dd HH:mm'}" />
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format}" 
+                                                         Value="{x:Static formats:Formats.ShortDate}">
+                                                <Setter  Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, StringFormat='yyyy/MM/dd'}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </customComponents:DateTimeTextBox.Style>
+
+                            </customComponents:DateTimeTextBox>
 
                             <UniformGrid Grid.Column="1" Columns="2">
                                 <UniformGrid Rows="2">
@@ -62,6 +79,18 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
+                                            
+                                            <Grid.Style>
+                                                <Style TargetType="{x:Type Grid}">
+                                                    <Setter Property="Visibility" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TimeTextBoxVisibility}"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format}" Value="{x:Static formats:Formats.ShortDate}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            
 
                                             <TextBox x:Name="PART_TIME_TEXT_BOX" 
                                                      Text="{Binding RelativeSource={RelativeSource TemplatedParent}, 

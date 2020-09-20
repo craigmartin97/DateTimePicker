@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <customcomponents:DateTimePicker Width="200" Height="30"  />
+        <customcomponents:DateTimePicker Width="200" Height="30"
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         Format="ShortDate" />
     </Grid>
 </Window>
