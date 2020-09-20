@@ -3,10 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:formats="clr-namespace:DateTimePicker"
     xmlns:converters="clr-namespace:DateTimePicker.Converters"
-    xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents">
+    xmlns:customComponents="clr-namespace:DateTimePicker.CustomComponents"
+    xmlns:gl="clr-namespace:System.Globalization;assembly=mscorlib">
 
     <converters:TimeConverter  x:Key="TimeConverter" />
     <converters:DateConverter  x:Key="DateConverter" />
+    <converters:TextConverter x:Key="TextConverter" />
+    <converters:NotNullConverter x:Key="NotNullConverter" />
 
     <Style TargetType="{x:Type customComponents:DateTimePicker}">
         <Setter Property="Template">
@@ -21,22 +24,36 @@
 
                             <customComponents:DateTimeTextBox x:Name="PART_MAIN_TEXT_BOX" 
                                                               FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
-                                                               VerticalContentAlignment="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                                                Path=VerticalContentAlignment}">
+                                                              VerticalContentAlignment="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=VerticalContentAlignment}">
                                 <customComponents:DateTimeTextBox.Style>
                                     <Style TargetType="{x:Type customComponents:DateTimeTextBox}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format}" 
-                                                         Value="{x:Static formats:Formats.ShortDateTime}">
-                                                <Setter  Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, StringFormat='yyyy/MM/dd HH:mm'}" />
-                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format, Converter={StaticResource NotNullConverter}}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
 
-                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Format}" 
-                                                         Value="{x:Static formats:Formats.ShortDate}">
-                                                <Setter  Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, 
-                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, StringFormat='yyyy/MM/dd'}" />
-                                            </DataTrigger>
+                                                <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                Path=Value, UpdateSourceTrigger=PropertyChanged, StringFormat='d',
+                                                    ConverterCulture={x:Static gl:CultureInfo.CurrentCulture}}" />
+                                            </MultiDataTrigger>
+
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FormatString, Converter={StaticResource NotNullConverter}}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+
+                                                <Setter Property="Text">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource TextConverter}" 
+                                                                      ConverterCulture="{x:Static gl:CultureInfo.CurrentCulture}"
+                                                                      StringFormat="{}{0}">
+                                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Value" UpdateSourceTrigger="PropertyChanged" />
+                                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FormatString" />
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </customComponents:DateTimeTextBox.Style>
@@ -79,7 +96,7 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            
+
                                             <Grid.Style>
                                                 <Style TargetType="{x:Type Grid}">
                                                     <Setter Property="Visibility" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TimeTextBoxVisibility}"></Setter>
@@ -90,7 +107,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Grid.Style>
-                                            
+
 
                                             <TextBox x:Name="PART_TIME_TEXT_BOX" 
                                                      Text="{Binding RelativeSource={RelativeSource TemplatedParent}, 

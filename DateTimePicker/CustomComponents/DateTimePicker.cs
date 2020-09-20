@@ -105,16 +105,15 @@ namespace DateTimePicker.CustomComponents
 
 
         public static readonly DependencyProperty SetFormatProperty =
-            DependencyProperty.Register("Format", typeof(Formats),
-                typeof(DateTimePicker), 
-                new FrameworkPropertyMetadata(Formats.ShortDateTime));
+            DependencyProperty.Register("Format", typeof(Formats?),
+                typeof(DateTimePicker), new FrameworkPropertyMetadata(null));
 
         /// <summary>
         /// Image path to be used for the calender button content
         /// </summary>
-        public Formats Format
+        public Formats? Format
         {
-            get => (Formats)GetValue(SetFormatProperty);
+            get => (Formats?)GetValue(SetFormatProperty);
             set => SetValue(SetFormatProperty, value);
         }
 
@@ -130,6 +129,20 @@ namespace DateTimePicker.CustomComponents
         {
             get => (Visibility)GetValue(SetFormatProperty);
             set => SetValue(SetFormatProperty, value);
+        }
+
+        public static readonly DependencyProperty SetFormatStringProperty =
+            DependencyProperty.Register("FormatString", typeof(string),
+                typeof(DateTimePicker),
+                new FrameworkPropertyMetadata(default));
+
+        /// <summary>
+        /// Image path to be used for the calender button content
+        /// </summary>
+        public string FormatString
+        {
+            get => (string)GetValue(SetFormatStringProperty);
+            set => SetValue(SetFormatStringProperty, value);
         }
         #endregion
 
