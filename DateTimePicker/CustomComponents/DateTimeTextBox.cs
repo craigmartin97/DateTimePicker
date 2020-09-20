@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace DateTimePicker.CustomComponents
 {
@@ -38,32 +36,6 @@ namespace DateTimePicker.CustomComponents
     {
         protected override void OnLostFocus(RoutedEventArgs e)
         {
-            e.Handled = true;
-        }
-
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
-        {
-            if (e.Key == Key.Down)
-            {
-
-            }
-            else if (e.Key == Key.Up)
-            {
-
-            }
-            else if (e.Key == Key.Left)
-            {
-
-            }
-            else if (e.Key == Key.Right)
-            {
-                
-            }
-
-            int start = SelectionStart;
-            int length = SelectedText.Trim().Length;
-
-            Select(start, length);
             e.Handled = true;
         }
     }

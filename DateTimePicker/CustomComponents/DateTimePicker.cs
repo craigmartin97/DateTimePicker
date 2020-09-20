@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -109,6 +110,7 @@ namespace DateTimePicker.CustomComponents
         private RepeatButton _mainDownButton;
         private RepeatButton _timeUpButton;
         private RepeatButton _timeDownButton;
+        private TextBox _mainTextBox;
 
         /// <summary>
         /// Increase main text box options
@@ -173,6 +175,33 @@ namespace DateTimePicker.CustomComponents
 
             _timeUpButton.Click += TimeUpButtonOnClick;
             _timeDownButton.Click += TimeDownButtonOnClick;
+
+            _mainTextBox = Template.FindName("PART_MAIN_TEXT_BOX", this) as TextBox;
+            _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
+        }
+
+        private void MainTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                Apply(_decrementFullDateDictionary, _mainTextBox, _mainTextBox.Text);
+            }
+            else if (e.Key == Key.Up)
+            {
+                Apply(_incrementFullDateDictionary, _mainTextBox, _mainTextBox.Text);
+            }
+            else if (e.Key == Key.Left)
+            {
+                FindPrevious(out int startSelectIndex, out int length);
+                _mainTextBox.Select(startSelectIndex, length);
+            }
+            else if (e.Key == Key.Right)
+            {
+                FindNext(out int startSelectIndex, out int length);
+                _mainTextBox.Select(startSelectIndex, length);
+            }
+
+            e.Handled = true;
         }
 
         #region Events
@@ -202,7 +231,7 @@ namespace DateTimePicker.CustomComponents
             if (string.IsNullOrWhiteSpace(textBox.SelectedText)) // Nothing selected
                 ChangeDayOnly(new DecreaseDayStrategy());
             else // Has something selected
-                Apply(_incrementFullDateDictionary, textBox, textBox.Text);
+                Apply(_decrementFullDateDictionary, textBox, textBox.Text);
         }
 
         private void TimeUpButtonOnClick(object sender, RoutedEventArgs e)
@@ -279,6 +308,71 @@ namespace DateTimePicker.CustomComponents
         {
             DateTimeContext context = new DateTimeContext(strategy);
             Value = context.Execute((DateTime)Value);
+        }
+
+        private void FindNext(out int startSelectIndex, out int length)
+        {
+            startSelectIndex = 0;
+            length = 0;
+
+            int start = _mainTextBox.SelectionStart + _mainTextBox.SelectionLength;
+
+            for (int i = start; i < _mainTextBox.Text.Length; i++)
+            {
+                char c = _mainTextBox.Text[i];
+
+                if (!char.IsDigit(c)) // Must be a seperator
+                    continue;
+
+                startSelectIndex = i;
+                for (int j = startSelectIndex; j <= _mainTextBox.Text.Length; j++)
+                {
+                    if (j == _mainTextBox.Text.Length)
+                    {
+                        return;
+                    }
+
+                    char nextNumber = _mainTextBox.Text[j];
+                    if (!char.IsDigit(nextNumber))
+                        return;
+
+                    length++;
+                }
+            }
+        }
+
+        private void FindPrevious(out int startSelectIndex, out int length)
+        {
+            startSelectIndex = 0;
+            length = 0;
+
+            for (int i = _mainTextBox.SelectionStart - 1; i >= 0; i--)
+            {
+                char c = _mainTextBox.Text[i];
+
+                if (!char.IsDigit(c)) // Must be a seperator
+                    continue;
+
+                startSelectIndex = i;
+                for (int j = startSelectIndex; j >= 0; j--)
+                {
+                    if (j == 0)
+                    {
+                        startSelectIndex = 0;
+                        length++;
+                        return;
+                    }
+
+                    char nextNumber = _mainTextBox.Text[j];
+                    if (!char.IsDigit(nextNumber))
+                    {
+                        startSelectIndex -= 1;
+                        return;
+                    }
+
+                    length++;
+                }
+            }
         }
     }
 }
