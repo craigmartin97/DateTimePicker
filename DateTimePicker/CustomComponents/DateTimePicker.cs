@@ -5,6 +5,7 @@ using DateTimePicker.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -45,8 +46,25 @@ namespace DateTimePicker.CustomComponents
     ///     <MyNamespace:DateTimePicker/>
     ///
     /// </summary>
-    public class DateTimePicker : Control
+    public class DateTimePicker : Control, INotifyPropertyChanged
     {
+        #region Notify PropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #region Notify Property Changed
+        /// <summary>
+        /// Inform the observers that the property has updated
+        /// </summary>
+        /// <param name="propertyName">The name of the property that has been updated</param>
+        protected void OnPropertyChanged(string propertyName)
+            => OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+            => PropertyChanged?.Invoke(this, e);
+        #endregion
+        #endregion
+
         #region Dependency Properties
 
         /// <summary>
@@ -177,7 +195,16 @@ namespace DateTimePicker.CustomComponents
         /// Custom string format property for the time text box
         /// Calculated from the FormatString provided by the user. Otherwise null
         /// </summary>
-        public string TimeFormatString { get; set; }
+        private string _timeFormatString;
+        public string TimeFormatString
+        {
+            get => _timeFormatString;
+            set
+            {
+                _timeFormatString = value;
+                OnPropertyChanged(nameof(TimeFormatString));
+            }
+        }
 
         #region Times Drop Down DP Properties
 
@@ -240,7 +267,7 @@ namespace DateTimePicker.CustomComponents
             DependencyProperty.Register("ShowTimesDropDown",
                 typeof(Visibility),
                 typeof(DateTimePicker),
-                new FrameworkPropertyMetadata());
+                new FrameworkPropertyMetadata(Visibility.Visible));
 
         /// <summary>
         /// Property to toggle the visibility of the times drop down selections
@@ -428,13 +455,13 @@ namespace DateTimePicker.CustomComponents
             }
 
             // Toggle the visibility and pre-load options of the Time options combo box
-            Times = new List<Time>
+            if (Times == null || ShowTimesDropDown == Visibility.Visible)
             {
-                new Time(1, "00:00"),
-                new Time(2, "01:00")
-            };
-            ShowTimesDropDown = Visibility.Visible;
-            TimesDisplayMemberPath = "Value";
+                // The user hasn't set the times options but it is visible. Set with pre-set options
+                Times = PreLoadTimeOptions.GetPreLoadTimes();
+                SelectedTime = null;
+                TimesDisplayMemberPath = nameof(Time.Value);
+            }
         }
 
         /// <summary>

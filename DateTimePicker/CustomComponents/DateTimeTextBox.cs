@@ -32,7 +32,7 @@ namespace DateTimePicker.CustomComponents
     ///     <MyNamespace:DateTimeTextBox/>
     ///
     /// </summary>
-    public class DateTimeTextBox : TextBox
+    internal class DateTimeTextBox : TextBox
     {
         protected override void OnLostFocus(RoutedEventArgs e)
         {

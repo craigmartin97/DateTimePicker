@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class SubControlDecreaseMinuteStrategy : IDateTimeStrategy
+    internal class SubControlDecreaseMinuteStrategy : IDateTimeStrategy
     {
         public DateTime UpdateDateTime(DateTime dateTime)
         {
