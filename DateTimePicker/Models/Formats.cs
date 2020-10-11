@@ -1,4 +1,4 @@
-﻿namespace DateTimePicker
+﻿namespace DateTimePicker.Models
 {
     public enum Formats
     {

@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
-    public class DateConverter : IValueConverter
+    internal class DateConverter : IValueConverter
     {
         private DateTime _date;
 

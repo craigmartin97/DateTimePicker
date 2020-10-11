@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public interface IDateTimeStrategy
+    internal interface IDateTimeStrategy
     {
         DateTime UpdateDateTime(DateTime dateTime);
     }

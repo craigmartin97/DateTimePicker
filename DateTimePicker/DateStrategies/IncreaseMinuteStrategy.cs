@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class IncreaseMinuteStrategy : IDateTimeStrategy
+    internal class IncreaseMinuteStrategy : IDateTimeStrategy
     {
         public DateTime UpdateDateTime(DateTime dateTime) => dateTime.AddMinutes(1);
     }

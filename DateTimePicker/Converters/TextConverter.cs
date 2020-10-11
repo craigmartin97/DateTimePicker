@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
-    public class TextConverter : IMultiValueConverter
+    internal class TextConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

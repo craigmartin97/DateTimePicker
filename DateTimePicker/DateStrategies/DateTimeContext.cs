@@ -1,25 +1,27 @@
-﻿using System;
+﻿using DateTimePicker.Models;
+using System;
 
 namespace DateTimePicker.DateStrategies
 {
-    public class DateTimeContext
+    internal class DateTimeContext
     {
         #region Fields
 
-        private readonly IDateTimeStrategy _strategy;
+        private readonly FormatSpecifier _formatSpecifier;
         #endregion
 
         #region Constructors
 
-        public DateTimeContext(IDateTimeStrategy strategy)
+        public DateTimeContext(FormatSpecifier formatSpecifier)
         {
-            _strategy = strategy;
+            _formatSpecifier = formatSpecifier;
         }
         #endregion
 
-        public DateTime Execute(DateTime dateTime)
-        {
-            return _strategy.UpdateDateTime(dateTime);
-        }
+        public DateTime ExecuteIncrease(DateTime dateTime)
+            => _formatSpecifier.IncrementStrategy.UpdateDateTime(dateTime);
+
+        public DateTime ExecuteDecrease(DateTime dateTime)
+            => _formatSpecifier.DecrementStrategy.UpdateDateTime(dateTime);
     }
 }

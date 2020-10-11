@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class DecreaseMonthStrategy : IDateTimeStrategy
+    internal class DecreaseMonthStrategy : IDateTimeStrategy
     {
         public DateTime UpdateDateTime(DateTime dateTime) => dateTime.AddMonths(-1);
     }

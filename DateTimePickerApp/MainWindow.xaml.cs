@@ -10,6 +10,7 @@ namespace DateTimePickerApp
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
         }
     }
 }

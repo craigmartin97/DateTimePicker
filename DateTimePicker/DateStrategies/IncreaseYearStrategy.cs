@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class IncreaseYearStrategy : IDateTimeStrategy
+    internal class IncreaseYearStrategy : IDateTimeStrategy
     {
         public DateTime UpdateDateTime(DateTime dateTime) => dateTime.AddYears(1);
     }

@@ -2,8 +2,9 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class IncreaseHourStrategy : IDateTimeStrategy
+    internal class IncreaseHourStrategy : IDateTimeStrategy
     {
-        public DateTime UpdateDateTime(DateTime dateTime) => dateTime.AddHours(1);
+        public DateTime UpdateDateTime(DateTime dateTime) 
+            => dateTime.AddHours(1);
     }
 }

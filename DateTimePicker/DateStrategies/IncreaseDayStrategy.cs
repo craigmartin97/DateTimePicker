@@ -2,7 +2,7 @@
 
 namespace DateTimePicker.DateStrategies
 {
-    public class IncreaseDayStrategy : IDateTimeStrategy
+    internal class IncreaseDayStrategy : IDateTimeStrategy
     {
         public DateTime UpdateDateTime(DateTime dateTime) => dateTime.AddDays(1);
     }
