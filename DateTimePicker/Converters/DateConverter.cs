@@ -24,7 +24,7 @@ namespace DateTimePicker.Converters
 
             DateTime dateTime = (DateTime)value;
             DateTime fullDateTime = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day,
-                _date.Hour, _date.Minute, 0);
+                _date.Hour, _date.Minute, _date.Second);
             return fullDateTime;
         }
     }

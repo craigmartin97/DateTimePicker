@@ -7,9 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <customcomponents:TimeTextBox Width="200" Height="28"
-                                      Value="{Binding Path=Value}"
-                                      ShowTimesDropDown="Collapsed"
-                                      FormatString="HH:mm"/>
+        <customcomponents:DateTimePicker Width="200" Height="32"
+                                         Value="{Binding Path=Value}"/>
     </Grid>
 </Window>

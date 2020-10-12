@@ -379,22 +379,20 @@ namespace DateTimePicker.CustomComponents
             _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
             _timeTextBox.PreviewKeyDown += TimeTextBoxOnPreviewKeyDown;
 
+            // The user has specified a custom string format calculate the FormatSpecifiers to use
+            IFormatStringFormatter formatStringFormatter = new FormatStringFormatter();
+
             // The user hasn't specified a format type. Set a default
             if (Format == null && string.IsNullOrWhiteSpace(FormatString))
             {
                 FormatString = string.Format(CultureInfo.CurrentCulture, "dd/MM/yyyy HH:mm");
-                return;
             }
-
             // The user has specified a preset format
-            if (Format != null)
+            else if (Format != null)
             {
                 FormatString = null; // Make the FormatString invalid and not usable
                 return;
             }
-
-            // The user has specified a custom string format calculate the FormatSpecifiers to use
-            IFormatStringFormatter formatStringFormatter = new FormatStringFormatter();
 
             // Get the main controls format specifiers
             IEnumerable<FormatSpecifier> mainFormatSpecifiers = formatStringFormatter.CalculateMainFormatSpecifiers(FormatString);
