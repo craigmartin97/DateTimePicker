@@ -5,19 +5,13 @@ namespace DateTimePicker
 {
     internal class PreLoadTimeOptions
     {
-        public static IList<Time> GetPreLoadTimes()
+        public static IList<Time> GetPreLoadTimes(string formatString)
         {
             IList<Time> times = new List<Time>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 24; i++)
             {
-                Time time = new Time(i, 0,0);
-                times.Add(time);
-            }
-
-            for (int i = 10; i < 24; i++)
-            {
-                Time time = new Time(i, 0,0);
+                Time time = new Time(i, 0, formatString, 0);
                 times.Add(time);
             }
 

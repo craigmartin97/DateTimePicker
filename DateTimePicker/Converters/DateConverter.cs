@@ -4,9 +4,18 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
+    /// <summary>
+    /// Convert the date time to the UI and back to the data source
+    /// </summary>
     internal class DateConverter : IValueConverter
     {
+        #region Fields
+
+        /// <summary>
+        /// Stored DateTime from the UI
+        /// </summary>
         private DateTime _date;
+        #endregion
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

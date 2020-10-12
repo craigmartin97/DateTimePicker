@@ -4,6 +4,9 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
+    /// <summary>
+    /// Convert the Time to a formatted DateTime
+    /// </summary>
     internal class TimeConverter : IMultiValueConverter
     {
         private DateTime _date;

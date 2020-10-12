@@ -4,6 +4,9 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
+    /// <summary>
+    /// Convert the textual DateTime to a formatted DateTime
+    /// </summary>
     internal class TextConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

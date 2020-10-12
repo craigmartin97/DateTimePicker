@@ -4,6 +4,10 @@ using System.Windows.Data;
 
 namespace DateTimePicker.Converters
 {
+    /// <summary>
+    /// Check if the passed object is a string and not null.
+    /// Return true if it is not null
+    /// </summary>
     internal class NotNullConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

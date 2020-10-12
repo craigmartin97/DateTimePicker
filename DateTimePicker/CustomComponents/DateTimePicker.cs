@@ -435,10 +435,10 @@ namespace DateTimePicker.CustomComponents
             }
 
             // Toggle the visibility and pre-load options of the Time options combo box
-            if (Times == null && ShowTimesDropDown == Visibility.Visible)
+            if (Times == null && ShowTimesDropDown == Visibility.Visible && !string.IsNullOrWhiteSpace(TimeFormatString))
             {
                 // The user hasn't set the times options but it is visible. Set with pre-set options
-                Times = PreLoadTimeOptions.GetPreLoadTimes();
+                Times = PreLoadTimeOptions.GetPreLoadTimes(TimeFormatString);
                 SelectedTime = null;
             }
         }
