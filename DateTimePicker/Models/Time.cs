@@ -1,25 +1,42 @@
 ﻿namespace DateTimePicker.Models
 {
-    internal class Time
+    public class Time
     {
         #region Properties
 
-        public int Id { get; set; }
+        public int Hour { get; set; }
+        public int Minute { get; set; }
+        public int Second { get; set; }
         public string Value { get; set; }
         #endregion
 
         #region Constructors
 
-        public Time(int id, string value)
+        public Time(int hour, int minute)
         {
-            Id = id;
-            Value = value;
+            Hour = hour;
+            Minute = minute;
+
+            string hourStr = Hour < 10 ? $"0{Hour}" : Hour.ToString();
+            string minuteStr = Minute < 10 ? $"0{Minute}" : Minute.ToString();
+
+            Value = $"{hourStr}:{minuteStr}";
+        }
+
+        public Time(int hour, int minute, int second)
+        {
+            Hour = hour;
+            Minute = minute;
+            Second = second;
+
+            string hourStr = Hour < 10 ? $"0{Hour}" : Hour.ToString();
+            string minuteStr = Minute < 10 ? $"0{Minute}" : Minute.ToString();
+            string secondStr = Second < 10 ? $"0{Second}" : Second.ToString();
+
+            Value = $"{hourStr}:{minuteStr}:{secondStr}";
         }
         #endregion
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value;
     }
 }

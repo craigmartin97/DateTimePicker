@@ -185,8 +185,7 @@
                                                        StaysOpen="False">
                                                     <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True"  MaxHeight="150">
                                                         <ListBox ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Times}"
-                                                                 SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTime}"
-                                                                 DisplayMemberPath="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TimesDisplayMemberPath}">
+                                                                 SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTime}">
                                                         </ListBox>
                                                     </ScrollViewer>
                                                     

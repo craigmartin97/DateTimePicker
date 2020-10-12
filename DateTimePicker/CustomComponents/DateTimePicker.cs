@@ -3,7 +3,6 @@ using DateTimePicker.Exceptions;
 using DateTimePicker.Interfaces;
 using DateTimePicker.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -213,16 +212,16 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetTimesProperty =
             DependencyProperty.Register("Times",
-                typeof(IEnumerable),
+                typeof(IEnumerable<Time>),
                 typeof(DateTimePicker),
                 new FrameworkPropertyMetadata(null));
 
         /// <summary>
         /// Times drop down options
         /// </summary>
-        public IEnumerable Times
+        public IEnumerable<Time> Times
         {
-            get => (IEnumerable)GetValue(SetTimesProperty);
+            get => (IEnumerable<Time>)GetValue(SetTimesProperty);
             set => SetValue(SetTimesProperty, value);
         }
 
@@ -241,14 +240,15 @@ namespace DateTimePicker.CustomComponents
             if (!(d is DateTimePicker dateTimePicker))
                 return;
 
-            if (!(dateTimePicker.Template.FindName("PART_TIME_TEXT_BOX", dateTimePicker) is TextBox timeTextBox))
-                throw new NullResourceException("Unable to find the Time Text Box");
+            if(!(e.NewValue is Time selectedTime))
+                return;
 
-            if (string.IsNullOrWhiteSpace(timeTextBox.Text))
-                dateTimePicker.Value = DateTime.Now;
+            dateTimePicker.Value ??= DateTime.Now;
 
-            timeTextBox.Text = e.NewValue.ToString();
-            dateTimePicker.SelectedTime = e.NewValue;
+            DateTime dt = (DateTime)dateTimePicker.Value;
+
+            DateTime dateTime = new DateTime(dt.Year, dt.Month, dt.Day, selectedTime.Hour, selectedTime.Minute, selectedTime.Second);
+            dateTimePicker.Value = dateTime;
         }
 
         /// <summary>
@@ -276,24 +276,6 @@ namespace DateTimePicker.CustomComponents
         {
             get => (Visibility)GetValue(SetShowTimesDropDownProperty);
             set => SetValue(SetShowTimesDropDownProperty, value);
-        }
-
-        /// <summary>
-        /// Dependency property to allow the user to set preset selection options for the available times
-        /// </summary>
-        public static readonly DependencyProperty SetTimesDisplayMemberPathProperty =
-            DependencyProperty.Register("TimesDisplayMemberPath",
-                typeof(string),
-                typeof(DateTimePicker),
-                new FrameworkPropertyMetadata(default(string)));
-
-        /// <summary>
-        /// Property to toggle the visibility of the times drop down selections
-        /// </summary>
-        public string TimesDisplayMemberPath
-        {
-            get => (string)GetValue(SetTimesDisplayMemberPathProperty);
-            set => SetValue(SetTimesDisplayMemberPathProperty, value);
         }
         #endregion
         #endregion
@@ -460,7 +442,6 @@ namespace DateTimePicker.CustomComponents
                 // The user hasn't set the times options but it is visible. Set with pre-set options
                 Times = PreLoadTimeOptions.GetPreLoadTimes();
                 SelectedTime = null;
-                TimesDisplayMemberPath = nameof(Time.Value);
             }
         }
 
