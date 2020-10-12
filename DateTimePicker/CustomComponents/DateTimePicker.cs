@@ -437,7 +437,7 @@ namespace DateTimePicker.CustomComponents
             }
 
             // Toggle the visibility and pre-load options of the Time options combo box
-            if (Times == null || ShowTimesDropDown == Visibility.Visible)
+            if (Times == null && ShowTimesDropDown == Visibility.Visible)
             {
                 // The user hasn't set the times options but it is visible. Set with pre-set options
                 Times = PreLoadTimeOptions.GetPreLoadTimes();
@@ -454,7 +454,7 @@ namespace DateTimePicker.CustomComponents
         {
             if (e.Key == Key.Down) // Decrease
             {
-                DateTime? dateTime = GetDateTimeFromString(_mainTextBox.Text);
+                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
                 if (dateTime == null)
                     return;
 
@@ -467,7 +467,7 @@ namespace DateTimePicker.CustomComponents
             }
             else if (e.Key == Key.Up) // Increase
             {
-                DateTime? dateTime = GetDateTimeFromString(_mainTextBox.Text);
+                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
                 if (dateTime == null)
                     return;
 
@@ -505,7 +505,7 @@ namespace DateTimePicker.CustomComponents
                 if (_timeFormatSpecifiers == null)
                     return;
 
-                DateTime? dateTime = GetDateTimeFromString(_timeTextBox.Text);
+                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_timeTextBox.Text);
                 if (dateTime == null)
                     return;
 
@@ -521,7 +521,7 @@ namespace DateTimePicker.CustomComponents
                 if (_timeFormatSpecifiers == null)
                     return;
 
-                DateTime? dateTime = GetDateTimeFromString(_timeTextBox.Text);
+                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_timeTextBox.Text);
                 if (dateTime == null)
                     return;
 
@@ -625,11 +625,5 @@ namespace DateTimePicker.CustomComponents
             }
         }
         #endregion
-
-        private static DateTime? GetDateTimeFromString(string text)
-        {
-            bool isValidDateTime = DateTime.TryParse(text, out DateTime dateTime);
-            return !isValidDateTime ? (DateTime?)null : dateTime;
-        }
     }
 }

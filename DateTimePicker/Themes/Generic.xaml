@@ -188,7 +188,6 @@
                                                                  SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTime}">
                                                         </ListBox>
                                                     </ScrollViewer>
-                                                    
                                                 </Popup>
                                             </UniformGrid>
                                         </Grid>
@@ -203,4 +202,100 @@
         </Setter>
     </Style>
 
+
+    <Style TargetType="{x:Type customComponents:TimeTextBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type customComponents:TimeTextBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="0.3*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Main text box -->
+                        <customComponents:DateTimeTextBox x:Name="PART_MAIN_TEXT_BOX" 
+                                                              FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
+                                                              VerticalContentAlignment="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=VerticalContentAlignment}">
+                            <customComponents:DateTimeTextBox.Style>
+                                <Style TargetType="{x:Type customComponents:DateTimeTextBox}">
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, 
+                                                                        Path=FormatString, Converter={StaticResource NotNullConverter}}" Value="False" />
+                                            </MultiDataTrigger.Conditions>
+
+                                            <Setter Property="Text">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource TimeConverter}"
+                                                                  ConverterCulture="{x:Static gl:CultureInfo.CurrentCulture}"
+                                                                  StringFormat="{}{0}">
+                                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Value" />
+                                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="FormatString" />
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </customComponents:DateTimeTextBox.Style>
+                        </customComponents:DateTimeTextBox>
+
+                        <UniformGrid Grid.Column="1" Columns="2">
+
+                            <UniformGrid.Style>
+                                <Style TargetType="{x:Type UniformGrid}">
+                                    <Setter Property="Columns" Value="2" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ShowTimesDropDown}" Value="Collapsed">
+                                            <Setter Property="Columns" Value="1" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ShowTimesDropDown}" Value="Hidden">
+                                            <Setter Property="Columns" Value="1" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </UniformGrid.Style>
+
+                            <UniformGrid Rows="2">
+                                <RepeatButton x:Name="PART_MAIN_UP_BUTTON">
+                                    <RepeatButton.Content>
+                                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=UpSource}" />
+                                    </RepeatButton.Content>
+                                </RepeatButton>
+
+                                <RepeatButton x:Name="PART_MAIN_DOWN_BUTTON">
+                                    <RepeatButton.Content>
+                                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DownSource}" />
+                                    </RepeatButton.Content>
+                                </RepeatButton>
+                            </UniformGrid>
+
+                            <!--  -->
+                            <ToggleButton x:Name="PART_TIMES_TOGGLE_BUTTON" 
+                                          Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ShowTimesDropDown}">
+                                <ToggleButton.Content>
+                                    <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DownSource}" />
+                                </ToggleButton.Content>
+                            </ToggleButton>
+
+                            <!-- Popup for times drop down -->
+                            <Popup IsOpen="{Binding Path=IsChecked, ElementName=PART_TIMES_TOGGLE_BUTTON}" 
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding ElementName=PART_MAIN_TEXT_BOX}"
+                                   Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Width}"
+                                   StaysOpen="False">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True"  MaxHeight="150">
+                                    <ListBox ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Times}"
+                                             SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTime}">
+                                    </ListBox>
+                                </ScrollViewer>
+                            </Popup>
+                        </UniformGrid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
