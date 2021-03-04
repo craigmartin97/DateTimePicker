@@ -227,6 +227,8 @@ namespace DateTimePicker.CustomComponents
         /// Find the next or previous number to jump to on left right key down movements
         /// </summary>
         private readonly INumberFinder _numberFinder = new NumberFinder();
+
+        private bool _previouslyEnteredNumber = false;
         #endregion
 
         #region Constructors
@@ -286,14 +288,14 @@ namespace DateTimePicker.CustomComponents
         /// <param name="e">Event arguments</param>
         private void MainControlButtonOnClick(object sender, RoutedEventArgs e)
         {
+            if (!(sender is FrameworkElement frameworkElement))
+                return;
+
             if (Value == null) // Apply value
             {
                 Value = DateTime.Now;
                 return;
             }
-
-            if (!(sender is FrameworkElement frameworkElement))
-                return;
 
             if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText)) // Nothing selected
             {
@@ -337,47 +339,59 @@ namespace DateTimePicker.CustomComponents
         /// <param name="e">Event arguments</param>
         private void MainTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Down) // Decrease
+            if (_timeFormatSpecifiers == null)
+                return;
+
+            DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
+            if (dateTime == null)
             {
-                if (_timeFormatSpecifiers == null)
-                    return;
-
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
-                if (dateTime == null)
-                    return;
-
-                DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
-                if (context == null || start < 0 || length < 0)
-                    return;
-
-                Value = context.ExecuteDecrease((DateTime)dateTime);
-                _mainTextBox.Select(start, length);
+                Value = DateTime.Now;
+                return;
             }
-            else if (e.Key == Key.Up) // Increase
+
+            if (e.Key == Key.Down || e.Key == Key.Up) // Decrease
             {
-                if (_timeFormatSpecifiers == null)
-                    return;
-
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
-                if (dateTime == null)
-                    return;
-
                 DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
-                Value = context.ExecuteIncrease((DateTime)dateTime);
+                Value = e.Key switch
+                {
+                    Key.Down => context.ExecuteDecrease((DateTime) dateTime),
+                    Key.Up => context.ExecuteIncrease((DateTime) dateTime),
+                    _ => Value
+                };
+
                 _mainTextBox.Select(start, length);
+                _previouslyEnteredNumber = false;
             }
             else if (e.Key == Key.Left) // Find the next left number
             {
                 _numberFinder.FindPrevious(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
+                _previouslyEnteredNumber = false;
             }
             else if (e.Key == Key.Right) // Find the next right number
             {
                 _numberFinder.FindNext(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
+                _previouslyEnteredNumber = false;
+            }
+            // The user pressed a number
+            else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
+            {
+                if(string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
+                    return;
+
+                DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
+                if (context == null || start < 0 || length < 0)
+                    return;
+
+                char i = e.Key.ToString()[1];
+                Value = context.UpdateDateTime((DateTime)dateTime, i, _previouslyEnteredNumber);
+                _mainTextBox.Select(start, length);
+
+                _previouslyEnteredNumber = !_previouslyEnteredNumber;
             }
 
             e.Handled = true;

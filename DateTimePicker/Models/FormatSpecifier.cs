@@ -1,25 +1,29 @@
 ﻿using DateTimePicker.DateStrategies;
+using DateTimePicker.Interfaces;
 
 namespace DateTimePicker.Models
 {
-    internal class FormatSpecifier
+    internal readonly struct FormatSpecifier
     {
         #region Properties
 
-        public string Specifier { get; set; }
-        public int Index { get; set; }
-        public IDateTimeStrategy IncrementStrategy { get; set; }
-        public IDateTimeStrategy DecrementStrategy { get; set; }
+        public string Specifier { get; }
+        public int Index { get; }
+        public IDateTimeStrategy IncrementStrategy { get; }
+        public IDateTimeStrategy DecrementStrategy { get; }
+        public IManuallyUpdateDateTimeStrategy ManuallyUpdateDateTimeStrategy { get; }
         #endregion
 
         #region Constructors
 
-        public FormatSpecifier(string specifier, int index, IDateTimeStrategy incrementStrategy, IDateTimeStrategy decrementStrategy)
+        public FormatSpecifier(string specifier, int index, IDateTimeStrategy incrementStrategy, 
+            IDateTimeStrategy decrementStrategy, IManuallyUpdateDateTimeStrategy manuallyUpdateDateTimeStrategy)
         {
             Specifier = specifier;
             Index = index;
             IncrementStrategy = incrementStrategy;
             DecrementStrategy = decrementStrategy;
+            ManuallyUpdateDateTimeStrategy = manuallyUpdateDateTimeStrategy;
         }
         #endregion
     }

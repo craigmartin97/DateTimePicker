@@ -23,5 +23,8 @@ namespace DateTimePicker.DateStrategies
 
         public DateTime ExecuteDecrease(DateTime dateTime)
             => _formatSpecifier.DecrementStrategy.UpdateDateTime(dateTime);
+
+        public DateTime UpdateDateTime(DateTime dateTime, char number, bool previouslyEnteredNumber)
+            => _formatSpecifier.ManuallyUpdateDateTimeStrategy.UpdateDateTime(dateTime, number, previouslyEnteredNumber);
     }
 }

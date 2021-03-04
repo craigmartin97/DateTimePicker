@@ -44,9 +44,6 @@ namespace DateTimePicker
             }
 
             FormatSpecifier formatSpecifier = formatSpecifiers.FirstOrDefault(x => x.Index == numberOfPreviousNumbers);
-            if (formatSpecifier == null)
-                return null;
-
             DateTimeContext dateTimeContext = new DateTimeContext(formatSpecifier);
             return dateTimeContext;
         }

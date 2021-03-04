@@ -7,7 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <customcomponents:DateTimePicker Width="200" Height="32"
-                                         Value="{Binding Path=Value}"/>
+        <customcomponents:TimeTextBox Width="200" Height="32"
+                                         Value="{Binding Path=Value}"
+                                         HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         FontSize="16"
+                                         FormatString="HH:mm"/>
     </Grid>
 </Window>
