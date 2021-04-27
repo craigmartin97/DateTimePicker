@@ -189,95 +189,6 @@ namespace DateTimePicker.CustomComponents
             get => (string)GetValue(SetFormatStringProperty);
             set => SetValue(SetFormatStringProperty, value);
         }
-
-        /// <summary>
-        /// Custom string format property for the time text box
-        /// Calculated from the FormatString provided by the user. Otherwise null
-        /// </summary>
-        private string _timeFormatString;
-        public string TimeFormatString
-        {
-            get => _timeFormatString;
-            set
-            {
-                _timeFormatString = value;
-                OnPropertyChanged(nameof(TimeFormatString));
-            }
-        }
-
-        #region Times Drop Down DP Properties
-
-        /// <summary>
-        /// Dependency property for setting the collection of times in the drop down
-        /// </summary>
-        public static readonly DependencyProperty SetTimesProperty =
-            DependencyProperty.Register("Times",
-                typeof(IEnumerable<Time>),
-                typeof(DateTimePicker),
-                new FrameworkPropertyMetadata(null));
-
-        /// <summary>
-        /// Times drop down options
-        /// </summary>
-        public IEnumerable<Time> Times
-        {
-            get => (IEnumerable<Time>)GetValue(SetTimesProperty);
-            set => SetValue(SetTimesProperty, value);
-        }
-
-        /// <summary>
-        /// Dependency property for the selected time property
-        /// </summary>
-        public static readonly DependencyProperty SetSelectedTimeProperty =
-            DependencyProperty.Register("SelectedTime",
-                typeof(object),
-                typeof(DateTimePicker),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.None, SelectedTimeChanged));
-
-        private static void SelectedTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            // Is the calling function a DateTimePicker
-            if (!(d is DateTimePicker dateTimePicker))
-                return;
-
-            if(!(e.NewValue is Time selectedTime))
-                return;
-
-            dateTimePicker.Value ??= DateTime.Now;
-
-            DateTime dt = (DateTime)dateTimePicker.Value;
-
-            DateTime dateTime = new DateTime(dt.Year, dt.Month, dt.Day, selectedTime.Hour, selectedTime.Minute, selectedTime.Second);
-            dateTimePicker.Value = dateTime;
-        }
-
-        /// <summary>
-        /// Selected time property
-        /// </summary>
-        public object SelectedTime
-        {
-            get => GetValue(SetSelectedTimeProperty);
-            set => SetValue(SetSelectedTimeProperty, value);
-        }
-
-        /// <summary>
-        /// Dependency property to allow the user to set preset selection options for the available times
-        /// </summary>
-        public static readonly DependencyProperty SetShowTimesDropDownProperty =
-            DependencyProperty.Register("ShowTimesDropDown",
-                typeof(Visibility),
-                typeof(DateTimePicker),
-                new FrameworkPropertyMetadata(Visibility.Visible));
-
-        /// <summary>
-        /// Property to toggle the visibility of the times drop down selections
-        /// </summary>
-        public Visibility ShowTimesDropDown
-        {
-            get => (Visibility)GetValue(SetShowTimesDropDownProperty);
-            set => SetValue(SetShowTimesDropDownProperty, value);
-        }
-        #endregion
         #endregion
 
         #region Fields
@@ -293,16 +204,6 @@ namespace DateTimePicker.CustomComponents
         private RepeatButton _mainDownButton;
 
         /// <summary>
-        /// The sub controls up button used to increment the Time
-        /// </summary>
-        private RepeatButton _timeUpButton;
-
-        /// <summary>
-        /// The sub controls down button used to decrement the Time
-        /// </summary>
-        private RepeatButton _timeDownButton;
-
-        /// <summary>
         /// The main controls text box
         /// </summary>
         private TextBox _mainTextBox;
@@ -310,7 +211,7 @@ namespace DateTimePicker.CustomComponents
         /// <summary>
         /// The sub controls text box
         /// </summary>
-        private TextBox _timeTextBox;
+        private TimeTextBox _timeTextBox;
 
         /// <summary>
         /// DateTimeContext to get the current DateTime and correct strategy to apply
@@ -328,10 +229,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         private FormatSpecifier[] _mainFormatSpecifiers;
 
-        /// <summary>
-        /// The sub controls format specifier options
-        /// </summary>
-        private FormatSpecifier[] _timeFormatSpecifiers;
+        private int _previousEntered;
         #endregion
 
         /// <summary>
@@ -361,23 +259,13 @@ namespace DateTimePicker.CustomComponents
             _mainUpButton.Click += MainControlButtonOnClick;
             _mainDownButton.Click += MainControlButtonOnClick;
 
-            _timeUpButton = Template.FindName("TIME_UP_BUTTON", this) as RepeatButton;
-            _timeDownButton = Template.FindName("TIME_DOWN_BUTTON", this) as RepeatButton;
-
-            if (_timeUpButton == null || _timeDownButton == null)
-                throw new NullResourceException("Unable to find the time spinner buttons");
-
-            _timeUpButton.Click += TimeButtonOnClick;
-            _timeDownButton.Click += TimeButtonOnClick;
-
             _mainTextBox = Template.FindName("PART_MAIN_TEXT_BOX", this) as TextBox;
-            _timeTextBox = Template.FindName("PART_TIME_TEXT_BOX", this) as TextBox;
+            _timeTextBox = Template.FindName("PART_TIME_TEXT_BOX", this) as TimeTextBox;
 
             if (_mainTextBox == null || _timeTextBox == null)
                 throw new NullResourceException("Unable to find the text boxes");
 
             _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
-            _timeTextBox.PreviewKeyDown += TimeTextBoxOnPreviewKeyDown;
 
             // The user has specified a custom string format calculate the FormatSpecifiers to use
             IFormatStringFormatter formatStringFormatter = new FormatStringFormatter();
@@ -402,19 +290,13 @@ namespace DateTimePicker.CustomComponents
             if (!(FormatString.Contains("HH") || FormatString.Contains("mm") || FormatString.Contains("ss")))
             {
                 TimeTextBoxVisibility = Visibility.Collapsed;
-                _timeFormatSpecifiers = null;
-                TimeFormatString = null;
+                _timeTextBox.FormatString = null;
                 return;
             }
             // The format string contains time format specifiers
             ITimeFormatSpecifierCalculator timeFormatSpecifier = new TimeFormatSpecifierCalculator();
             string timeFormatString = timeFormatSpecifier.CalculateTimeFormatString(FormatString);
-            TimeFormatString = timeFormatString;
-
-            // The user has specified some time format specifiers.
-            IEnumerable<FormatSpecifier> timeFormatSpecifiers =
-                formatStringFormatter.CalculateTimeFormatSpecifiers(FormatString);
-            _timeFormatSpecifiers = timeFormatSpecifiers.ToArray();
+            _timeTextBox.FormatString = timeFormatString;
 
             // Find the main popup to calculate it's width
             if (!(Template.FindName("PART_MAIN_POPUP", this) is FrameworkElement mainPopup))
@@ -435,12 +317,12 @@ namespace DateTimePicker.CustomComponents
             }
 
             // Toggle the visibility and pre-load options of the Time options combo box
-            if (Times == null && ShowTimesDropDown == Visibility.Visible && !string.IsNullOrWhiteSpace(TimeFormatString))
-            {
-                // The user hasn't set the times options but it is visible. Set with pre-set options
-                Times = PreLoadTimeOptions.GetPreLoadTimes(TimeFormatString);
-                SelectedTime = null;
-            }
+            if (string.IsNullOrWhiteSpace(_timeTextBox.FormatString))
+                return;
+
+            // The user hasn't set the times options but it is visible. Set with pre-set options
+            _timeTextBox.Times = PreLoadTimeOptions.GetPreLoadTimes(_timeTextBox.FormatString);
+            _timeTextBox.SelectedTime = null;
         }
 
         /// <summary>
@@ -450,95 +332,69 @@ namespace DateTimePicker.CustomComponents
         /// <param name="e">Event arguments</param>
         private void MainTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
+            if (dateTime == null)
+            {
+                Value = DateTime.Now;
+                return;
+            }
+
             if (e.Key == Key.Down) // Decrease
             {
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
-                if (dateTime == null)
-                    return;
-
                 DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _mainFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
                 Value = context.ExecuteDecrease((DateTime)dateTime);
                 _mainTextBox.Select(start, length);
+                _previousEntered = 0;
             }
             else if (e.Key == Key.Up) // Increase
             {
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
-                if (dateTime == null)
-                    return;
-
                 DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _mainFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
                 Value = context.ExecuteIncrease((DateTime)dateTime);
                 _mainTextBox.Select(start, length);
+                _previousEntered = 0;
             }
             else if (e.Key == Key.Left) // Select the next left number
             {
                 _numberFinder.FindPrevious(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
+                _previousEntered = 0;
             }
             else if (e.Key == Key.Right) // Select the next right number
             {
                 _numberFinder.FindNext(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
+                _previousEntered = 0;
             }
-
-            e.Handled = true;
-        }
-
-        /// <summary>
-        /// Event handler for the sub control text box.
-        /// When the user presses the arrow keys determine the correct action to apply.
-        /// </summary>
-        /// <param name="sender">TextBox</param>
-        /// <param name="e">Event arguments</param>
-        private void TimeTextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Down) // Decrease
+            // The user pressed a number
+            else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
-                if (_timeFormatSpecifiers == null)
+                if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
                     return;
 
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_timeTextBox.Text);
-                if (dateTime == null)
-                    return;
-
-                DateTimeContext context = _obtainContext.Apply(_timeTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
+                DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _mainFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
-                Value = context.ExecuteDecrease((DateTime)dateTime);
-                _timeTextBox.Select(start, length);
-            }
-            else if (e.Key == Key.Up) // Increase
-            {
-                if (_timeFormatSpecifiers == null)
-                    return;
+                char i = e.Key.ToString()[1];
+                Value = context.UpdateDateTime((DateTime)dateTime, i, _previousEntered);
 
-                DateTime? dateTime = GetDateTime.GetDateTimeFromString(_timeTextBox.Text);
-                if (dateTime == null)
-                    return;
+                _mainTextBox.Select(start, length);
 
-                DateTimeContext context = _obtainContext.Apply(_timeTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
-                if (context == null || start < 0 || length < 0)
-                    return;
-
-                Value = context.ExecuteIncrease((DateTime)dateTime);
-                _timeTextBox.Select(start, length);
-            }
-            else if (e.Key == Key.Left) // Find the next left number
-            {
-                _numberFinder.FindPrevious(_timeTextBox, out int startSelectIndex, out int length);
-                _timeTextBox.Select(startSelectIndex, length);
-            }
-            else if (e.Key == Key.Right) // Find the next right number
-            {
-                _numberFinder.FindNext(_timeTextBox, out int startSelectIndex, out int length);
-                _timeTextBox.Select(startSelectIndex, length);
+                int reset = context.GetPreviousReset();
+                if (_previousEntered == reset)
+                {
+                    _previousEntered = 0;
+                }
+                else
+                {
+                    _previousEntered++;
+                }
             }
 
             e.Handled = true;
@@ -585,41 +441,6 @@ namespace DateTimePicker.CustomComponents
                     Value = context.ExecuteDecrease(dateTime);
 
                 _mainTextBox.Select(start, length);
-            }
-        }
-
-        private void TimeButtonOnClick(object sender, RoutedEventArgs e)
-        {
-            if (Value == null) // Apply value
-            {
-                Value = DateTime.Now;
-                return;
-            }
-
-            if (!(sender is FrameworkElement frameworkElement))
-                return;
-
-            if (string.IsNullOrWhiteSpace(_timeTextBox.SelectedText)) // Nothing selected
-            {
-                if (frameworkElement.Name.Equals("TIME_UP_BUTTON"))
-                    Value = new IncreaseMinuteStrategy().UpdateDateTime((DateTime)Value);
-                else if (frameworkElement.Name.Equals("TIME_DOWN_BUTTON"))
-                    Value = new DecreaseMinuteStrategy().UpdateDateTime((DateTime)Value);
-            }
-            else // Has something selected
-            {
-                bool isValidDateTime = DateTime.TryParse(_timeTextBox.Text, out DateTime dateTime);
-                if (!isValidDateTime)
-                    return;
-
-                DateTimeContext context = _obtainContext.Apply(_timeTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
-
-                if (frameworkElement.Name.Equals("TIME_UP_BUTTON"))
-                    Value = context.ExecuteIncrease(dateTime);
-                else if (frameworkElement.Name.Equals("TIME_DOWN_BUTTON"))
-                    Value = context.ExecuteDecrease(dateTime);
-
-                _timeTextBox.Select(start, length);
             }
         }
         #endregion

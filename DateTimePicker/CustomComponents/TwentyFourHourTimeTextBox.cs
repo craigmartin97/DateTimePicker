@@ -4,6 +4,7 @@ using DateTimePicker.Interfaces;
 using DateTimePicker.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -105,6 +106,26 @@ namespace DateTimePicker.CustomComponents
         {
             get => (int?)GetValue(SetSecondProperty);
             set => SetValue(SetSecondProperty, value);
+        }
+
+        /// <summary>
+        /// Dependency property for the hour dependency property
+        /// </summary>
+        public static readonly DependencyProperty SetDisplayValueProperty =
+            DependencyProperty.Register("DisplayValue", typeof(string),
+                typeof(TwentyFourHourTimeTextBox),
+                new FrameworkPropertyMetadata(default(string))
+                {
+                    BindsTwoWayByDefault = true
+                });
+
+        /// <summary>
+        /// Hour value
+        /// </summary>
+        public string DisplayValue
+        {
+            get => (string)GetValue(SetDisplayValueProperty);
+            set => SetValue(SetDisplayValueProperty, value);
         }
 
         /// <summary>
@@ -323,6 +344,12 @@ namespace DateTimePicker.CustomComponents
                 times.Clear();
                 SelectedTime = null;
             }
+
+            _mainTextBox.TextChanged += (sender, args) =>
+            {
+                TextBox textBox = (TextBox) sender;
+                DisplayValue = textBox.Text;
+            };
         }
 
         #region Button Events

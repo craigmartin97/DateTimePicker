@@ -1,11 +1,11 @@
-﻿using DateTimePicker.Interfaces;
-using System;
+﻿using System;
+using DateTimePicker.Interfaces;
 
 namespace DateTimePicker.DateStrategies.ManualUpdates
 {
     public class ChangeMinute : IManuallyUpdateDateTimeStrategy, IManuallyUpdateTimeStrategy
     {
-        public DateTime UpdateDateTime(DateTime dateTime, char number, bool previouslyEnteredNumber)
+        public DateTime UpdateDateTime(DateTime dateTime, char number, int previouslyEnteredNumber)
         {
             if (char.IsWhiteSpace(number))
                 return dateTime;
@@ -15,12 +15,12 @@ namespace DateTimePicker.DateStrategies.ManualUpdates
 
             int minute = (int)char.GetNumericValue(number);
 
-            if (previouslyEnteredNumber)
+            if (previouslyEnteredNumber == 1)
             {
                 string s = dateTime.Minute.ToString();
                 string str = $"{s[0]}{minute}";
                 minute = int.Parse(str);
-                if (minute < 0 || minute >= 60)
+                if (minute < 0 || minute > 59)
                     minute = 0;
             }
 

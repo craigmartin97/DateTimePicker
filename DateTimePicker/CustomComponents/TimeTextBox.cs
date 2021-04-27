@@ -43,7 +43,7 @@ namespace DateTimePicker.CustomComponents
     ///     <MyNamespace:TimeTextBox/>
     ///
     /// </summary>
-    public class TimeTextBox : Control
+    public class TimeTextBox : TextBox
     {
         #region Dependency Properties
 
@@ -228,7 +228,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         private readonly INumberFinder _numberFinder = new NumberFinder();
 
-        private bool _previouslyEnteredNumber;
+        private int _previouslyEnteredNumber;
         #endregion
 
         #region Constructors
@@ -269,12 +269,13 @@ namespace DateTimePicker.CustomComponents
             _timeFormatSpecifiers = timeFormatSpecifiers.ToArray();
 
             // Toggle the visibility and pre-load options of the Time options combo box
-            if (Times == null && ShowTimesDropDown == Visibility.Visible && !string.IsNullOrWhiteSpace(FormatString))
-            {
-                // The user hasn't set the times options but it is visible. Set with pre-set options
-                Times = PreLoadTimeOptions.GetPreLoadTimes(FormatString);
-                SelectedTime = null;
-            }
+            if (Times != null || ShowTimesDropDown != Visibility.Visible ||
+                string.IsNullOrWhiteSpace(FormatString))
+                return;
+
+            // The user hasn't set the times options but it is visible. Set with pre-set options
+            Times = PreLoadTimeOptions.GetPreLoadTimes(FormatString);
+            SelectedTime = null;
         }
 
         #region Button Events
@@ -324,7 +325,7 @@ namespace DateTimePicker.CustomComponents
                 {
                     Value = context.ExecuteDecrease(dateTime);
                 }
-                
+
                 _mainTextBox.Select(start, length);
             }
         }
@@ -357,30 +358,30 @@ namespace DateTimePicker.CustomComponents
 
                 Value = e.Key switch
                 {
-                    Key.Down => context.ExecuteDecrease((DateTime) dateTime),
-                    Key.Up => context.ExecuteIncrease((DateTime) dateTime),
+                    Key.Down => context.ExecuteDecrease((DateTime)dateTime),
+                    Key.Up => context.ExecuteIncrease((DateTime)dateTime),
                     _ => Value
                 };
 
                 _mainTextBox.Select(start, length);
-                _previouslyEnteredNumber = false;
+                _previouslyEnteredNumber = 0;
             }
             else if (e.Key == Key.Left) // Find the next left number
             {
                 _numberFinder.FindPrevious(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
-                _previouslyEnteredNumber = false;
+                _previouslyEnteredNumber = 0;
             }
             else if (e.Key == Key.Right) // Find the next right number
             {
                 _numberFinder.FindNext(_mainTextBox, out int startSelectIndex, out int length);
                 _mainTextBox.Select(startSelectIndex, length);
-                _previouslyEnteredNumber = false;
+                _previouslyEnteredNumber = 0;
             }
             // The user pressed a number
             else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
-                if(string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
+                if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
                     return;
 
                 DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
@@ -391,7 +392,15 @@ namespace DateTimePicker.CustomComponents
                 Value = context.UpdateDateTime((DateTime)dateTime, i, _previouslyEnteredNumber);
                 _mainTextBox.Select(start, length);
 
-                _previouslyEnteredNumber = !_previouslyEnteredNumber;
+                int reset = context.GetPreviousReset();
+                if (_previouslyEnteredNumber == reset)
+                {
+                    _previouslyEnteredNumber = 0;
+                }
+                else
+                {
+                    _previouslyEnteredNumber++;
+                }
             }
 
             e.Handled = true;

@@ -15,7 +15,7 @@ namespace DateTimePickerApp
             }
         }
 
-        private int? _hour;
+        private int? _hour = 23;
         public int? Hour
         {
             get => _hour;
@@ -26,7 +26,7 @@ namespace DateTimePickerApp
             }
         }
 
-        private int? _minute;
+        private int? _minute = 10;
         public int? Minute
         {
             get => _minute;
@@ -45,6 +45,17 @@ namespace DateTimePickerApp
             {
                 _second = value;
                 OnPropertyChanged(nameof(Second));
+            }
+        }
+
+        private string _displayValue;
+        public string DisplayValue
+        {
+            get => _displayValue;
+            set
+            {
+                _displayValue = value;
+                OnPropertyChanged(nameof(DisplayValue));
             }
         }
     }

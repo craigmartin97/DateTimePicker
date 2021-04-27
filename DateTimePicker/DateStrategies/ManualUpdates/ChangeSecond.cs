@@ -5,7 +5,7 @@ namespace DateTimePicker.DateStrategies.ManualUpdates
 {
     public class ChangeSecond : IManuallyUpdateDateTimeStrategy, IManuallyUpdateTimeStrategy
     {
-        public DateTime UpdateDateTime(DateTime dateTime, char number, bool previouslyEnteredNumber)
+        public DateTime UpdateDateTime(DateTime dateTime, char number, int previouslyEnteredNumber)
         {
             if (char.IsWhiteSpace(number))
                 return dateTime;
@@ -15,7 +15,7 @@ namespace DateTimePicker.DateStrategies.ManualUpdates
 
             int second = (int)char.GetNumericValue(number);
 
-            if (previouslyEnteredNumber)
+            if (previouslyEnteredNumber == 1)
             {
                 string s = dateTime.Second.ToString();
                 string str = $"{s[0]}{second}";

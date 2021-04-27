@@ -15,12 +15,20 @@
                                          FormatString="HH:mm"/>-->
 
         <customcomponents:TwentyFourHourTimeTextBox Width="200" Height="32" 
-                                                    Hour="{Binding Path=Hour}"
-                                                    Minute="{Binding Path=Minute}"
-                                                    Second="{Binding Path=Second}"
+                                                    Hour="{Binding Path=Hour, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                    Minute="{Binding Path=Minute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                    Second="{Binding Path=Second, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                    DisplayValue="{Binding Path=DisplayValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                                                     HorizontalContentAlignment="Center"
                                                     VerticalContentAlignment="Center"
                                                     FontSize="16"
-                                                    FormatString="HH:mm:ss"/>
+                                                    FormatString="HH:mm"/>
+
+        <!--<customcomponents:DateTimePicker Width="200" Height="32"
+                                         Value="{Binding Path=Value}"
+                                         HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         FontSize="16"
+                                         FormatString="yyyy-MM-dd HH:mm" />-->
     </Grid>
 </Window>

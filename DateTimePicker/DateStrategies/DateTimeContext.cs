@@ -24,7 +24,30 @@ namespace DateTimePicker.DateStrategies
         public DateTime ExecuteDecrease(DateTime dateTime)
             => _formatSpecifier.DecrementStrategy.UpdateDateTime(dateTime);
 
-        public DateTime UpdateDateTime(DateTime dateTime, char number, bool previouslyEnteredNumber)
+        public DateTime UpdateDateTime(DateTime dateTime, char number, int previouslyEnteredNumber)
             => _formatSpecifier.ManuallyUpdateDateTimeStrategy.UpdateDateTime(dateTime, number, previouslyEnteredNumber);
+
+        public string GetSpecifier() => _formatSpecifier.Specifier;
+
+        public int GetPreviousReset()
+        {
+            string s = GetSpecifier();
+            return s switch
+            {
+                // Day
+                "dd" => 1,
+                // Month
+                "MM" => 1,
+                // Year
+                "yyyy" => 3,
+                // Hour
+                "HH" => 1,
+                // Minute
+                "mm" => 1,
+                // Second
+                "ss" => 1,
+                _ => 2
+            };
+        }
     }
 }
