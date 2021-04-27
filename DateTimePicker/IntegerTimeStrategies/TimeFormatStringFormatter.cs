@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace DateTimePicker
+namespace DateTimePicker.IntegerTimeStrategies
 {
-    internal class FormatStringFormatter : IFormatStringFormatter
+    internal class TimeFormatStringFormatter : ITimeFormatStringFormatter
     {
-        public IEnumerable<FormatSpecifier> CalculateMainFormatSpecifiers(string formatString)
+        public IEnumerable<TimeFormatSpecifier> CalculateTimeFormatSpecifiers(string formatString)
         {
             // The user has specified a custom string
             if (string.IsNullOrWhiteSpace(formatString))
@@ -23,44 +23,18 @@ namespace DateTimePicker
              * Validated a valid DateTime Format from the user.
              * Calculate the positions of each data type.
              */
-            IFormatSpecifierFactory factory = new MainControlFormatSpecifierFactory();
-
-            string[] specifiers = formatString.Split(FormatStringSeperators.Seperators);
-            FormatSpecifier[] formatSpecifiers = new FormatSpecifier[specifiers.Length];
-            for (int i = 0; i < specifiers.Length; i++)
-            {
-                FormatSpecifier formatSpecifier = factory.CreateFormatSpecifier(specifiers[i], i);
-                formatSpecifiers[i] = formatSpecifier;
-            }
-
-            return formatSpecifiers;
-        }
-
-        public IEnumerable<FormatSpecifier> CalculateTimeFormatSpecifiers(string formatString)
-        {
-            // The user has specified a custom string
-            if (string.IsNullOrWhiteSpace(formatString))
-                return null;
-
-            if (!ValidStringFormat(formatString))
-                return null;
-
-            /*
-             * Validated a valid DateTime Format from the user.
-             * Calculate the positions of each data type.
-             */
-            IFormatSpecifierFactory factory = new SubControlFormatSpecifierFactory();
+            ITimeFormatSpecifierFactory factory = new TimeFormatSpecifierFactory();
 
             int index = 0;
             string[] specifiers = formatString.Split(FormatStringSeperators.Seperators);
-            IList<FormatSpecifier> formatSpecifiers = new List<FormatSpecifier>();
+            IList<TimeFormatSpecifier> formatSpecifiers = new List<TimeFormatSpecifier>();
             foreach (string specifier in specifiers)
             {
                 string s = specifier;
-                if(!(s.Equals("HH") || s.Equals("mm") || s.Equals("ss")))
+                if (!(s.Equals("HH") || s.Equals("mm") || s.Equals("ss")))
                     continue;
 
-                FormatSpecifier formatSpecifier = factory.CreateFormatSpecifier(specifier, index);
+                TimeFormatSpecifier formatSpecifier = factory.CreateFormatSpecifier(specifier, index);
                 formatSpecifiers.Add(formatSpecifier);
                 index++;
             }

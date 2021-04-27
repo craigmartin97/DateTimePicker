@@ -7,11 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <customcomponents:TimeTextBox Width="200" Height="32"
+        <!--<customcomponents:TimeTextBox Width="200" Height="32"
                                          Value="{Binding Path=Value}"
                                          HorizontalContentAlignment="Center"
                                          VerticalContentAlignment="Center"
                                          FontSize="16"
-                                         FormatString="HH:mm"/>
+                                         FormatString="HH:mm"/>-->
+
+        <customcomponents:TwentyFourHourTimeTextBox Width="200" Height="32" 
+                                                    Hour="{Binding Path=Hour}"
+                                                    Minute="{Binding Path=Minute}"
+                                                    Second="{Binding Path=Second}"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalContentAlignment="Center"
+                                                    FontSize="16"
+                                                    FormatString="HH:mm:ss"/>
     </Grid>
 </Window>

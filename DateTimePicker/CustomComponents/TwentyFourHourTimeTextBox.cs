@@ -1,5 +1,5 @@
-﻿using DateTimePicker.DateStrategies;
-using DateTimePicker.Exceptions;
+﻿using DateTimePicker.Exceptions;
+using DateTimePicker.IntegerTimeStrategies;
 using DateTimePicker.Interfaces;
 using DateTimePicker.Models;
 using System;
@@ -40,31 +40,71 @@ namespace DateTimePicker.CustomComponents
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:TimeTextBox/>
+    ///     <MyNamespace:TwentyFourHourTimeTextBox/>
     ///
     /// </summary>
-    public class TimeTextBox : Control
+    public class TwentyFourHourTimeTextBox : Control
     {
         #region Dependency Properties
 
         /// <summary>
-        /// Dependency property for the DateTime Value which is data bound
+        /// Dependency property for the hour dependency property
         /// </summary>
-        public static readonly DependencyProperty SetValueProperty =
-            DependencyProperty.Register("Value", typeof(DateTime?),
-                typeof(TimeTextBox),
-                new FrameworkPropertyMetadata(default(DateTime?))
+        public static readonly DependencyProperty SetHourProperty =
+            DependencyProperty.Register("Hour", typeof(int?),
+                typeof(TwentyFourHourTimeTextBox),
+                new FrameworkPropertyMetadata(default(int?))
                 {
                     BindsTwoWayByDefault = true
                 });
 
         /// <summary>
-        /// DateTime Value property
+        /// Hour value
         /// </summary>
-        public DateTime? Value
+        public int? Hour
         {
-            get => (DateTime?)GetValue(SetValueProperty);
-            set => SetValue(SetValueProperty, value);
+            get => (int?)GetValue(SetHourProperty);
+            set => SetValue(SetHourProperty, value);
+        }
+
+        /// <summary>
+        /// Dependency property for the hour dependency property
+        /// </summary>
+        public static readonly DependencyProperty SetMinuteProperty =
+            DependencyProperty.Register("Minute", typeof(int?),
+                typeof(TwentyFourHourTimeTextBox),
+                new FrameworkPropertyMetadata(default(int?))
+                {
+                    BindsTwoWayByDefault = true
+                });
+
+        /// <summary>
+        /// Hour value
+        /// </summary>
+        public int? Minute
+        {
+            get => (int?)GetValue(SetMinuteProperty);
+            set => SetValue(SetMinuteProperty, value);
+        }
+
+        /// <summary>
+        /// Dependency property for the hour dependency property
+        /// </summary>
+        public static readonly DependencyProperty SetSecondProperty =
+            DependencyProperty.Register("Second", typeof(int?),
+                typeof(TwentyFourHourTimeTextBox),
+                new FrameworkPropertyMetadata(default(int?))
+                {
+                    BindsTwoWayByDefault = true
+                });
+
+        /// <summary>
+        /// Hour value
+        /// </summary>
+        public int? Second
+        {
+            get => (int?)GetValue(SetSecondProperty);
+            set => SetValue(SetSecondProperty, value);
         }
 
         /// <summary>
@@ -73,7 +113,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetUpSourceProperty =
             DependencyProperty.Register("UpSource", typeof(ImageSource),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(new BitmapImage(new Uri("pack://application:,,,/DateTimePicker;component/Images/arrowup.ico"))));
 
         /// <summary>
@@ -91,7 +131,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetDownSourceProperty =
             DependencyProperty.Register("DownSource", typeof(ImageSource),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(new BitmapImage(new Uri("pack://application:,,,/DateTimePicker;component/Images/arrowdn.ico"))));
 
         /// <summary>
@@ -108,7 +148,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetFormatStringProperty =
             DependencyProperty.Register("FormatString", typeof(string),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(default));
 
         /// <summary>
@@ -128,7 +168,7 @@ namespace DateTimePicker.CustomComponents
         public static readonly DependencyProperty SetTimesProperty =
             DependencyProperty.Register("Times",
                 typeof(IEnumerable<Time>),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(null));
 
         /// <summary>
@@ -146,24 +186,21 @@ namespace DateTimePicker.CustomComponents
         public static readonly DependencyProperty SetSelectedTimeProperty =
             DependencyProperty.Register("SelectedTime",
                 typeof(object),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.None, SelectedTimeChanged));
 
         private static void SelectedTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // Is the calling function a DateTimePicker
-            if (!(d is TimeTextBox dateTimePicker))
+            if (!(d is TwentyFourHourTimeTextBox dateTimePicker))
                 return;
 
             if (!(e.NewValue is Time selectedTime))
                 return;
 
-            dateTimePicker.Value ??= DateTime.Now;
-
-            DateTime dt = (DateTime)dateTimePicker.Value;
-
-            DateTime dateTime = new DateTime(dt.Year, dt.Month, dt.Day, selectedTime.Hour, selectedTime.Minute, selectedTime.Second);
-            dateTimePicker.Value = dateTime;
+            dateTimePicker.Hour = selectedTime.Hour;
+            dateTimePicker.Minute = selectedTime.Minute;
+            dateTimePicker.Second = selectedTime.Second;
         }
 
         /// <summary>
@@ -181,7 +218,7 @@ namespace DateTimePicker.CustomComponents
         public static readonly DependencyProperty SetShowTimesDropDownProperty =
             DependencyProperty.Register("ShowTimesDropDown",
                 typeof(Visibility),
-                typeof(TimeTextBox),
+                typeof(TwentyFourHourTimeTextBox),
                 new FrameworkPropertyMetadata(Visibility.Visible));
 
         /// <summary>
@@ -216,26 +253,26 @@ namespace DateTimePicker.CustomComponents
         /// DateTimeContext to get the current DateTime and correct strategy to apply
         /// based on the StringFormat and the position of the selected text
         /// </summary>
-        private readonly IObtainDateTimeContext _obtainContext = new ObtainDateTimeContext();
+        private readonly IObtainTimeContext _obtainContext = new ObtainTimeContext();
 
         /// <summary>
         /// The sub controls format specifier options
         /// </summary>
-        private FormatSpecifier[] _timeFormatSpecifiers;
+        private TimeFormatSpecifier[] _timeFormatSpecifiers;
 
         /// <summary>
         /// Find the next or previous number to jump to on left right key down movements
         /// </summary>
         private readonly INumberFinder _numberFinder = new NumberFinder();
 
-        private bool _previouslyEnteredNumber;
+        private bool _previouslyEnteredNumber = false;
         #endregion
 
         #region Constructors
 
-        static TimeTextBox()
+        static TwentyFourHourTimeTextBox()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeTextBox), new FrameworkPropertyMetadata(typeof(TimeTextBox)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TwentyFourHourTimeTextBox), new FrameworkPropertyMetadata(typeof(TwentyFourHourTimeTextBox)));
         }
         #endregion
 
@@ -261,18 +298,29 @@ namespace DateTimePicker.CustomComponents
             _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
 
             // The user has specified a custom string format calculate the FormatSpecifiers to use
-            IFormatStringFormatter formatStringFormatter = new FormatStringFormatter();
+            if (string.IsNullOrWhiteSpace(FormatString))
+            {
+                FormatString = "HH:mm";
+            }
 
             // The user has specified some time format specifiers.
-            IEnumerable<FormatSpecifier> timeFormatSpecifiers =
-                formatStringFormatter.CalculateTimeFormatSpecifiers(FormatString);
-            _timeFormatSpecifiers = timeFormatSpecifiers.ToArray();
+            ITimeFormatStringFormatter formatter = new TimeFormatStringFormatter();
+            IEnumerable<TimeFormatSpecifier> specifiers = formatter.CalculateTimeFormatSpecifiers(FormatString);
+            _timeFormatSpecifiers = specifiers.ToArray();
 
             // Toggle the visibility and pre-load options of the Time options combo box
             if (Times == null && ShowTimesDropDown == Visibility.Visible && !string.IsNullOrWhiteSpace(FormatString))
             {
+                List<Time> times = new List<Time>();
                 // The user hasn't set the times options but it is visible. Set with pre-set options
-                Times = PreLoadTimeOptions.GetPreLoadTimes(FormatString);
+                IEnumerable<Time> allTimes = PreLoadTimeOptions.GetPreLoadTimes(FormatString);
+
+                times.AddRange(allTimes);
+                // Represents the start of the next day
+                times.Add(new Time(24, 0, FormatString, 0)); // Special date time for this control
+                Times = new List<Time>(times);
+
+                times.Clear();
                 SelectedTime = null;
             }
         }
@@ -291,40 +339,67 @@ namespace DateTimePicker.CustomComponents
             if (!(sender is FrameworkElement frameworkElement))
                 return;
 
-            if (Value == null) // Apply value
-            {
-                Value = DateTime.Now;
-                return;
-            }
+            DateTime now = DateTime.Now;
 
-            if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText)) // Nothing selected
+            Hour ??= now.Hour;
+            Minute ??= 0;
+            Second ??= 0;
+
+            if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText)) // Nothing selected. Change hour only
             {
                 if (frameworkElement.Name.Equals("PART_MAIN_UP_BUTTON"))
                 {
-                    Value = new IncreaseMinuteStrategy().UpdateDateTime((DateTime)Value);
+                    if (Hour == 24) // At the end, so wrap around back to the start
+                    {
+                        Hour = 0;
+                        Minute = 0;
+                        Second = 0;
+                    }
+                    else
+                    {
+                        Hour++;
+                    }
                 }
                 else if (frameworkElement.Name.Equals("PART_MAIN_DOWN_BUTTON"))
                 {
-                    Value = new DecreaseMinuteStrategy().UpdateDateTime((DateTime)Value);
+                    if (Hour == 0) // At the start, so wrap around back to the end
+                    {
+                        Hour = 24;
+                        Minute = 0;
+                        Second = 0;
+                    }
+                    else
+                    {
+                        Hour--;
+                    }
                 }
             }
-            else // Has something selected
+            else // The user has something selected
             {
-                bool isValidDateTime = DateTime.TryParse(_mainTextBox.Text, out DateTime dateTime);
-                if (!isValidDateTime)
-                    return;
+                int hour = (int)Hour;
+                int minute = (int)Minute;
+                int second = (int)Second;
 
-                DateTimeContext context = _obtainContext.Apply(_mainTextBox, dateTime, _timeFormatSpecifiers, out int start, out int length);
+                int updatedHour = hour;
+                int updatedMinute = minute;
+                int updatedSecond = second;
+
+                TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
 
                 if (frameworkElement.Name.Equals("PART_MAIN_UP_BUTTON"))
                 {
-                    Value = context.ExecuteIncrease(dateTime);
+                    context.ExecuteIncrease(hour, minute, second, out updatedHour, out updatedMinute, out updatedSecond);
                 }
                 else if (frameworkElement.Name.Equals("PART_MAIN_DOWN_BUTTON"))
                 {
-                    Value = context.ExecuteDecrease(dateTime);
+                    context.ExecuteDecrease(hour, minute, second, out updatedHour, out updatedMinute, out updatedSecond);
                 }
-                
+
+                Hour = updatedHour;
+                Minute = updatedMinute;
+                Second = updatedSecond;
+
+                // Select the same portion in the text box
                 _mainTextBox.Select(start, length);
             }
         }
@@ -342,25 +417,45 @@ namespace DateTimePicker.CustomComponents
             if (_timeFormatSpecifiers == null)
                 return;
 
-            DateTime? dateTime = GetDateTime.GetDateTimeFromString(_mainTextBox.Text);
-            if (dateTime == null)
-            {
-                Value = DateTime.Now;
-                return;
-            }
+            DateTime now = DateTime.Now;
+            Hour ??= now.Hour;
+            Minute ??= 0;
+            Second ??= 0;
 
-            if (e.Key == Key.Down || e.Key == Key.Up) // Decrease
+            int hour = (int)Hour;
+            int minute = (int)Minute;
+            int second = (int)Second;
+
+            int updatedHour = hour;
+            int updatedMinute = minute;
+            int updatedSecond = second;
+
+            if (e.Key == Key.Down) // Increase or decrease the selected values
             {
-                DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
+                TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
-                Value = e.Key switch
-                {
-                    Key.Down => context.ExecuteDecrease((DateTime) dateTime),
-                    Key.Up => context.ExecuteIncrease((DateTime) dateTime),
-                    _ => Value
-                };
+                context.ExecuteDecrease(hour, minute, second, out updatedHour, out updatedMinute, out updatedSecond);
+
+                Hour = updatedHour;
+                Minute = updatedMinute;
+                Second = updatedSecond;
+
+                _mainTextBox.Select(start, length);
+                _previouslyEnteredNumber = false;
+            }
+            else if (e.Key == Key.Up)
+            {
+                TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
+                if (context == null || start < 0 || length < 0)
+                    return;
+
+                context.ExecuteIncrease(hour, minute, second, out updatedHour, out updatedMinute, out updatedSecond);
+
+                Hour = updatedHour;
+                Minute = updatedMinute;
+                Second = updatedSecond;
 
                 _mainTextBox.Select(start, length);
                 _previouslyEnteredNumber = false;
@@ -380,17 +475,22 @@ namespace DateTimePicker.CustomComponents
             // The user pressed a number
             else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
-                if(string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
+                if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
                     return;
 
-                DateTimeContext context = _obtainContext.Apply(_mainTextBox, Value, _timeFormatSpecifiers, out int start, out int length);
+                TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
                 if (context == null || start < 0 || length < 0)
                     return;
 
                 char i = e.Key.ToString()[1];
-                Value = context.UpdateDateTime((DateTime)dateTime, i, _previouslyEnteredNumber);
-                _mainTextBox.Select(start, length);
+                context.UpdateTime(hour, minute, second, i, _previouslyEnteredNumber, out updatedHour,
+                    out updatedMinute, out updatedSecond);
 
+                Hour = updatedHour;
+                Minute = updatedMinute;
+                Second = updatedSecond;
+
+                _mainTextBox.Select(start, length);
                 _previouslyEnteredNumber = !_previouslyEnteredNumber;
             }
 
