@@ -4,7 +4,6 @@ using DateTimePicker.Interfaces;
 using DateTimePicker.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -317,6 +316,7 @@ namespace DateTimePicker.CustomComponents
                 throw new NullResourceException("Unable to find the text boxes");
 
             _mainTextBox.PreviewKeyDown += MainTextBoxOnPreviewKeyDown;
+            _mainTextBox.PreviewMouseLeftButtonUp += MainTextBoxOnPreviewMouseLeftButtonDown;
 
             // The user has specified a custom string format calculate the FormatSpecifiers to use
             if (string.IsNullOrWhiteSpace(FormatString))
@@ -350,6 +350,67 @@ namespace DateTimePicker.CustomComponents
                 TextBox textBox = (TextBox) sender;
                 DisplayValue = textBox.Text;
             };
+        }
+
+        private static void MainTextBoxOnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+                return;
+
+            if (!(sender is TextBox textBox))
+                return;
+
+            int caretIndex = textBox.CaretIndex;
+            int start = 0;
+            int end = 0;
+
+            if (caretIndex == 0) // At the start
+            {
+                start = 0;
+                for (int i = 0; i < textBox.Text.Length; i++)
+                {
+                    if(char.IsNumber(textBox.Text[i]))
+                        continue;
+                    end = i;
+                    break;
+                }
+            }
+            else if (textBox.Text.Length == caretIndex) // At the end
+            {
+                end = textBox.Text.Length;
+                for (int i = textBox.Text.Length - 1; i >= 0; i--)
+                {
+                    if (char.IsNumber(textBox.Text[i]))
+                        continue;
+                    start = i+1;
+                    break;
+                }
+            }
+            else // Somewhere in between
+            {
+                // Find the end
+                for (int i = caretIndex; i < textBox.Text.Length; i++)
+                {
+                    if (char.IsNumber(textBox.Text[i]))
+                        continue;
+                    end = i;
+                    break;
+                }
+
+                if (end == 0)
+                    end = caretIndex;
+
+                // Find the start
+                for (int i = caretIndex; i >= 0; i--)
+                {
+                    if (char.IsNumber(textBox.Text[i]))
+                        continue;
+                    start = i+1;
+                    break;
+                }
+            }
+
+            textBox.Select(start, end);
         }
 
         #region Button Events
@@ -453,9 +514,9 @@ namespace DateTimePicker.CustomComponents
             int minute = (int)Minute;
             int second = (int)Second;
 
-            int updatedHour = hour;
-            int updatedMinute = minute;
-            int updatedSecond = second;
+            int updatedHour;
+            int updatedMinute;
+            int updatedSecond;
 
             if (e.Key == Key.Down) // Increase or decrease the selected values
             {
@@ -519,6 +580,20 @@ namespace DateTimePicker.CustomComponents
 
                 _mainTextBox.Select(start, length);
                 _previouslyEnteredNumber = !_previouslyEnteredNumber;
+            }
+            //else if (e.Key == Key.Back) // The user has pressed the backspace key
+            //{
+            //    if(string.IsNullOrWhiteSpace(_mainTextBox.Text))
+            //        return;
+            //    int caretIndex = _mainTextBox.CaretIndex;
+            //    string s = _mainTextBox.Text.Remove(caretIndex - 1, 1);
+            //    _mainTextBox.Text = s;
+            //    _mainTextBox.CaretIndex = caretIndex - 1;
+            //}
+            else if (e.Key == Key.End) // The user has pressed the end key
+            {
+                _mainTextBox.Select(0,0);; // Deselect all test
+                _mainTextBox.CaretIndex = _mainTextBox.Text.Length; // Put cursor at end
             }
 
             e.Handled = true;

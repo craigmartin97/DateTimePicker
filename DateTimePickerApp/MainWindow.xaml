@@ -4,15 +4,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:customcomponents="clr-namespace:DateTimePicker.CustomComponents;assembly=DateTimePicker"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <StackPanel>
         <!--<customcomponents:TimeTextBox Width="200" Height="32"
                                          Value="{Binding Path=Value}"
                                          HorizontalContentAlignment="Center"
                                          VerticalContentAlignment="Center"
                                          FontSize="16"
                                          FormatString="HH:mm"/>-->
+
+
+        <xctk:DateTimePicker  Width="200" Height="32" Margin="0,0,0,20"/>
 
         <customcomponents:TwentyFourHourTimeTextBox Width="200" Height="32" 
                                                     Hour="{Binding Path=Hour, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -30,5 +34,5 @@
                                          VerticalContentAlignment="Center"
                                          FontSize="16"
                                          FormatString="yyyy-MM-dd HH:mm" />-->
-    </Grid>
+    </StackPanel>
 </Window>
