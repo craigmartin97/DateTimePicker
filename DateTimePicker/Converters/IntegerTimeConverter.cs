@@ -10,7 +10,7 @@ namespace DateTimePicker.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values == null || values.Length != 4)
+            if (!(values is {Length: 4}))
                 return null;
 
             if (!(values[3] is string formatString))
@@ -23,64 +23,62 @@ namespace DateTimePicker.Converters
             {
                 return null;
             }
+
+            // Now know that the hour and minute are not null
+            int hour = (int)values[0];
+            int minute = (int) values[1];
+
+            string hourStr = hour.ToString();
+            string minuteStr = minute.ToString();
+
+            //if (hour <= 9)
+            //{
+            //    hourStr = $"0{hour}";
+            //}
+
+            //if (minute <= 9)
+            //{
+            //    minuteStr = $"0{minute}";
+            //}
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append($"{hourStr}:{minuteStr}");
+
+            if (values[2] is int second)
+            {
+                string secondStr = second.ToString();
+                if (second <= 9)
+                {
+                    secondStr = $"0{second}";
+                }
+
+                char[] seps = { ':', ';', ',', '.', '-' };
+                string[] str = formatString.Split(seps);
+
+                string temp = stringBuilder.ToString();
+                string[] madeTimes = temp.Split(seps);
+
+                if (str.Length == 3 && madeTimes.Length == 2)
+                {
+                    stringBuilder.Append($":{secondStr}");
+                }
+            }
             else
             {
-                // Now know that the hour and minute are not null
-                int hour = (int)values[0];
-                int minute = (int) values[1];
+                char[] seps = {':', ';', ',', '.', '-'};
+                string[] str = formatString.Split(seps);
 
-                string hourStr = hour.ToString();
-                string minuteStr = minute.ToString();
+                string temp = stringBuilder.ToString();
+                string[] madeTimes = temp.Split(seps);
 
-                if (hour <= 9)
+                if (str.Length == 3 && madeTimes.Length == 2)
                 {
-                    hourStr = $"0{hour}";
+                    stringBuilder.Append(":00");
                 }
-
-                if (minute <= 9)
-                {
-                    minuteStr = $"0{minute}";
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append($"{hourStr}:{minuteStr}");
-
-                if (values[2] is int second)
-                {
-                    string secondStr = second.ToString();
-                    if (second <= 9)
-                    {
-                        secondStr = $"0{second}";
-                    }
-
-                    char[] seps = { ':', ';', ',', '.', '-' };
-                    string[] str = formatString.Split(seps);
-
-                    string temp = stringBuilder.ToString();
-                    string[] madeTimes = temp.Split(seps);
-
-                    if (str.Length == 3 && madeTimes.Length == 2)
-                    {
-                        stringBuilder.Append($":{secondStr}");
-                    }
-                }
-                else
-                {
-                    char[] seps = {':', ';', ',', '.', '-'};
-                    string[] str = formatString.Split(seps);
-
-                    string temp = stringBuilder.ToString();
-                    string[] madeTimes = temp.Split(seps);
-
-                    if (str.Length == 3 && madeTimes.Length == 2)
-                    {
-                        stringBuilder.Append(":00");
-                    }
-                }
-
-                string s = stringBuilder.ToString();
-                return s;
             }
+
+            string s = stringBuilder.ToString();
+            return s;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

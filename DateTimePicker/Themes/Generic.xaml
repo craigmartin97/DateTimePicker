@@ -336,6 +336,7 @@
                                                 <Setter.Value>
                                                     <MultiBinding Converter="{StaticResource IntegerTimeConverter}"
                                                                   ConverterCulture="{x:Static gl:CultureInfo.CurrentCulture}"
+                                                                  UpdateSourceTrigger="PropertyChanged"
                                                                   StringFormat="{}{0}">
                                                         <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Hour" />
                                                         <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Minute" />

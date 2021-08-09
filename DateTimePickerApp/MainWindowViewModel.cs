@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace DateTimePickerApp
 {
@@ -22,6 +23,7 @@ namespace DateTimePickerApp
             set
             {
                 _hour = value;
+                Debug.WriteLine("Hour Update: " + _hour);
                 OnPropertyChanged(nameof(Hour));
             }
         }
@@ -33,6 +35,7 @@ namespace DateTimePickerApp
             set
             {
                 _minute = value;
+                Debug.WriteLine("Minute Update: " + _minute);
                 OnPropertyChanged(nameof(Minute));
             }
         }

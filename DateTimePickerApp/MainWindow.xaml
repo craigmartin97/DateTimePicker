@@ -21,7 +21,7 @@
         <customcomponents1:TimePicker Width="200" Height="32" Margin="0,0,0,20" 
                                      Watermark="Hello world!!!">
         </customcomponents1:TimePicker>
-                                     <customcomponents:TwentyFourHourTimeTextBox Width="200" Height="32" 
+                                     <customcomponents:TwentyFourHourTimeTextBox x:Name="TwentyFourHourTimeTextBox" Width="200" Height="32" 
                                                     Hour="{Binding Path=Hour, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                     Minute="{Binding Path=Minute, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                     Second="{Binding Path=Second, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -30,6 +30,8 @@
                                                     VerticalContentAlignment="Center"
                                                     FontSize="16"
                                                     FormatString="HH:mm"/>
+
+        <Button Click="ButtonBase_OnClick" Content="Click Me" Margin="10"/>
 
         <!--<customcomponents:DateTimePicker Width="200" Height="32"
                                          Value="{Binding Path=Value}"

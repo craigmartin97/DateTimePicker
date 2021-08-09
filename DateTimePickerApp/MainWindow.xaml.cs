@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 
 namespace DateTimePickerApp
 {
@@ -11,6 +12,12 @@ namespace DateTimePickerApp
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Pressed!!!");
+            Debug.WriteLine(TwentyFourHourTimeTextBox.Hour + ":" + TwentyFourHourTimeTextBox.Minute);
         }
     }
 }
