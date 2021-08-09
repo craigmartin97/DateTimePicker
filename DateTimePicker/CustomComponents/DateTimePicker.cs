@@ -45,7 +45,7 @@ namespace DateTimePicker.CustomComponents
     ///     <MyNamespace:DateTimePicker/>
     ///
     /// </summary>
-    public class DateTimePicker : Control, INotifyPropertyChanged
+    public class DateTimePicker_OLD : Control, INotifyPropertyChanged
     {
         #region Notify PropertyChanged
 
@@ -71,7 +71,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetValueProperty =
             DependencyProperty.Register("Value", typeof(DateTime?),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(default(DateTime?))
                 {
                     BindsTwoWayByDefault = true
@@ -92,7 +92,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetUpSourceProperty =
             DependencyProperty.Register("UpSource", typeof(ImageSource),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(new BitmapImage(new Uri("pack://application:,,,/DateTimePicker;component/Images/arrowup.ico"))));
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetDownSourceProperty =
             DependencyProperty.Register("DownSource", typeof(ImageSource),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(new BitmapImage(new Uri("pack://application:,,,/DateTimePicker;component/Images/arrowdn.ico"))));
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetCalendarSourceProperty =
             DependencyProperty.Register("CalendarSource", typeof(ImageSource),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(new BitmapImage(new Uri("pack://application:,,,/DateTimePicker;component/Images/arrowdn.ico"))));
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetFormatProperty =
             DependencyProperty.Register("Format", typeof(Formats?),
-                typeof(DateTimePicker), new FrameworkPropertyMetadata(null));
+                typeof(DateTimePicker_OLD), new FrameworkPropertyMetadata(null));
 
         /// <summary>
         /// Preset image format property
@@ -161,7 +161,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetTimeTextBoxVisibilityProperty =
             DependencyProperty.Register("TimeTextBoxVisibility", typeof(Visibility),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(Visibility.Visible));
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace DateTimePicker.CustomComponents
         /// </summary>
         public static readonly DependencyProperty SetFormatStringProperty =
             DependencyProperty.Register("FormatString", typeof(string),
-                typeof(DateTimePicker),
+                typeof(DateTimePicker_OLD),
                 new FrameworkPropertyMetadata(default));
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace DateTimePicker.CustomComponents
         /// <summary>
         /// Apply the default style for the DateTime Picker. This style can be found in Themes/Generics.xaml
         /// </summary>
-        static DateTimePicker()
+        static DateTimePicker_OLD()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(DateTimePicker), new FrameworkPropertyMetadata(typeof(DateTimePicker)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DateTimePicker_OLD), new FrameworkPropertyMetadata(typeof(DateTimePicker_OLD)));
         }
 
         /// <summary>

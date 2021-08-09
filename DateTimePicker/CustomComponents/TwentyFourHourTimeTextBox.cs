@@ -427,11 +427,22 @@ namespace DateTimePicker.CustomComponents
             if (!(sender is FrameworkElement frameworkElement))
                 return;
 
-            DateTime now = DateTime.Now;
-
-            Hour ??= now.Hour;
-            Minute ??= 0;
-            Second ??= 0;
+            if (string.IsNullOrWhiteSpace(_mainTextBox.Text))
+            {
+                DateTime now = DateTime.Now;
+                Hour ??= now.Hour;
+                Minute ??= 0;
+                Second ??= 0;
+            }
+            else
+            {
+                string[] times = _mainTextBox.Text.Split(':', ',', '-', '_', '~', '.',';');
+                DateTime now = DateTime.Now;
+                Hour = times.Length > 0  ? int.Parse(times[0]) : now.Hour;
+                Minute = times.Length > 1 ? int.Parse(times[1]) : 0;
+                Second = times.Length > 2 ? int.Parse(times[2]) : 0;
+            }
+            
 
             if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText)) // Nothing selected. Change hour only
             {
@@ -563,23 +574,25 @@ namespace DateTimePicker.CustomComponents
             // The user pressed a number
             else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
-                if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
-                    return;
+                //if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
+                //    return;
 
-                TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
-                if (context == null || start < 0 || length < 0)
-                    return;
+                //TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
+                //if (context == null || start < 0 || length < 0)
+                //    return;
 
-                char i = e.Key.ToString()[1];
-                context.UpdateTime(hour, minute, second, i, _previouslyEnteredNumber, out updatedHour,
-                    out updatedMinute, out updatedSecond);
+                //char i = e.Key.ToString()[1];
+                //context.UpdateTime(hour, minute, second, i, _previouslyEnteredNumber, out updatedHour,
+                //    out updatedMinute, out updatedSecond);
 
-                Hour = updatedHour;
-                Minute = updatedMinute;
-                Second = updatedSecond;
+                //Hour = updatedHour;
+                //Minute = updatedMinute;
+                //Second = updatedSecond;
 
-                _mainTextBox.Select(start, length);
-                _previouslyEnteredNumber = !_previouslyEnteredNumber;
+                //_mainTextBox.Select(start, length);
+                //_previouslyEnteredNumber = !_previouslyEnteredNumber;
+                base.OnPreviewKeyDown(e);
+                return;
             }
             //else if (e.Key == Key.Back) // The user has pressed the backspace key
             //{
