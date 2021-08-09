@@ -85,7 +85,18 @@ namespace DateTimePicker.Converters
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (!(value is string s)) return null;
+            bool parsed = DateTime.TryParse(s, out DateTime dateTime);
+            if (parsed)
+                return new object[]
+                {
+                    dateTime.Hour,
+                    dateTime.Minute,
+                    dateTime.Second,
+                    "HH:mm"
+                };
+            return null;
+
         }
     }
 }

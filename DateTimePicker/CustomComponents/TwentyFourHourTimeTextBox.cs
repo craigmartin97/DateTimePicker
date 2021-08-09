@@ -427,22 +427,10 @@ namespace DateTimePicker.CustomComponents
             if (!(sender is FrameworkElement frameworkElement))
                 return;
 
-            if (string.IsNullOrWhiteSpace(_mainTextBox.Text))
-            {
-                DateTime now = DateTime.Now;
-                Hour ??= now.Hour;
-                Minute ??= 0;
-                Second ??= 0;
-            }
-            else
-            {
-                string[] times = _mainTextBox.Text.Split(':', ',', '-', '_', '~', '.',';');
-                DateTime now = DateTime.Now;
-                Hour = times.Length > 0  ? int.Parse(times[0]) : now.Hour;
-                Minute = times.Length > 1 ? int.Parse(times[1]) : 0;
-                Second = times.Length > 2 ? int.Parse(times[2]) : 0;
-            }
-            
+            GetLatestDateTime(out int tempHour, out int tempMinute, out int tempSecond);
+            Hour = tempHour;
+            Minute = tempMinute;
+            Second = tempSecond;
 
             if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText)) // Nothing selected. Change hour only
             {
@@ -516,14 +504,7 @@ namespace DateTimePicker.CustomComponents
             if (_timeFormatSpecifiers == null)
                 return;
 
-            DateTime now = DateTime.Now;
-            Hour ??= now.Hour;
-            Minute ??= 0;
-            Second ??= 0;
-
-            int hour = (int)Hour;
-            int minute = (int)Minute;
-            int second = (int)Second;
+            GetLatestDateTime(out int hour, out int minute, out int second);
 
             int updatedHour;
             int updatedMinute;
@@ -572,37 +553,12 @@ namespace DateTimePicker.CustomComponents
                 _previouslyEnteredNumber = false;
             }
             // The user pressed a number
-            else if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
+            else if (e.Key >= Key.D0 && e.Key <= Key.D9 || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9) || 
+                     e.Key == Key.Back || e.Key == Key.Delete || e.Key == Key.Oem1 || e.Key == Key.OemMinus)
             {
-                //if (string.IsNullOrWhiteSpace(_mainTextBox.SelectedText))
-                //    return;
-
-                //TimeContext context = _obtainContext.Apply(_mainTextBox, _timeFormatSpecifiers, out int start, out int length);
-                //if (context == null || start < 0 || length < 0)
-                //    return;
-
-                //char i = e.Key.ToString()[1];
-                //context.UpdateTime(hour, minute, second, i, _previouslyEnteredNumber, out updatedHour,
-                //    out updatedMinute, out updatedSecond);
-
-                //Hour = updatedHour;
-                //Minute = updatedMinute;
-                //Second = updatedSecond;
-
-                //_mainTextBox.Select(start, length);
-                //_previouslyEnteredNumber = !_previouslyEnteredNumber;
                 base.OnPreviewKeyDown(e);
                 return;
             }
-            //else if (e.Key == Key.Back) // The user has pressed the backspace key
-            //{
-            //    if(string.IsNullOrWhiteSpace(_mainTextBox.Text))
-            //        return;
-            //    int caretIndex = _mainTextBox.CaretIndex;
-            //    string s = _mainTextBox.Text.Remove(caretIndex - 1, 1);
-            //    _mainTextBox.Text = s;
-            //    _mainTextBox.CaretIndex = caretIndex - 1;
-            //}
             else if (e.Key == Key.End) // The user has pressed the end key
             {
                 _mainTextBox.Select(0,0);; // Deselect all test
@@ -612,5 +568,24 @@ namespace DateTimePicker.CustomComponents
             e.Handled = true;
         }
         #endregion
+
+        private void GetLatestDateTime(out int hour, out int minute, out int second)
+        {
+            if (string.IsNullOrWhiteSpace(_mainTextBox.Text))
+            {
+                DateTime now = DateTime.Now;
+                hour = now.Hour;
+                minute = 0;
+                second = 0;
+            }
+            else
+            {
+                string[] times = _mainTextBox.Text.Split(':', ',', '-', '_', '~', '.', ';');
+                DateTime now = DateTime.Now;
+                hour = times.Length > 0 && int.TryParse(times[0], out int h) ? h : now.Hour;
+                minute = times.Length > 1 && int.TryParse(times[1], out int m) ? m : 0;
+                second = times.Length > 2 && int.TryParse(times[2], out int s) ? s : 0;
+            }
+        }
     }
 }
